@@ -1,1320 +1,1081 @@
-# AI 协作型项目工作区：面向多角色软件工程的 Context Engineering RFC
+# Context Compiler
 
-## 背景
+> 将分散的软件工程项目知识，编译成 AI Agent 可理解、可追溯、可治理、可按角色消费的结构化上下文。
 
-传统软件开发通常围绕“人”来组织协作。
+**Context Compiler** 是一个面向 AI 协作型软件工程的 Context Engineering 实验项目。
 
-一个项目往往由产品、设计、前端、后端、测试、运维等角色共同完成。每个角色使用自己的工具、文档和工作方式：
+它尝试将产品文档、设计说明、代码仓库、接口定义、测试用例、历史缺陷、会议纪要和运行日志等项目资料，编译成 AI Agent 可以理解、追溯、验证和按角色使用的结构化上下文。
 
-- 产品维护 PRD、业务规则、会议纪要、需求变更记录；
-- 设计维护原型、交互说明、视觉稿、流程图；
-- 前端维护页面、组件、状态管理、接口调用；
-- 后端维护服务、接口、领域模型、数据库和任务；
-- 测试维护测试计划、测试用例、缺陷复盘、造数说明和自动化测试。
+这个项目的目标不是替代产品经理、设计师、开发、测试或 Reviewer。
 
-在传统模式下，仓库通常只是“代码仓库”。
+它的目标是减少低效的上下文转述，让 AI Agent 能够在真实软件项目中理解正确的背景、约束、关系和可信来源。
 
-大量产品背景、业务约束、历史决策、测试思路和设计细节分散在文档工具、聊天记录、会议纪要、网盘、Issue、Wiki 或人的脑子里。
+---
 
-这在纯人工协作时代还能勉强运转，但在 AI coding agent 时代会暴露出新的问题：
+## 为什么需要 Context Compiler？
 
-1. AI 只能看到代码，却看不到完整业务上下文；
-2. AI 容易误读过期资料、历史方案或草稿；
-3. AI 经常不知道哪些需求、测试、接口、页面之间有关联；
-4. 不同角色反复向 AI 补充背景，造成重复沟通和上下文浪费；
-5. 产品、测试、设计如果被迫改用 Markdown 或工程化格式，会增加很大组织阻力；
-6. AI coding agent 往往更偏向开发角色，而忽略产品、设计、测试等角色同样需要 AI 上下文。
+传统软件项目通常围绕“人”来组织协作。
 
-因此，我提出一个开放问题：
+一个典型项目可能包含产品、设计、前端、后端、测试、运维和评审等角色。不同角色维护不同资料：
 
-> 在 AI 参与软件开发越来越深入的时代，项目仓库是否应该从“代码仓库”升级为“面向 AI 协作的项目工作空间”？
+* 产品维护 PRD、业务规则、会议纪要和需求变更记录；
+* 设计维护原型、交互说明、视觉稿和用户流程；
+* 前端维护页面、组件、状态管理和接口调用；
+* 后端维护服务、接口、领域模型、数据库和后台任务；
+* 测试维护测试计划、测试用例、测试数据、缺陷复盘和自动化测试。
+
+在很多团队里，仓库仍然主要只是一个 **代码仓库**。
+
+大量重要的项目知识散落在文档工具、聊天记录、Issue 系统、设计工具、Wiki、网盘、测试平台和人的记忆中。
+
+在纯人工协作时代，这种方式还能勉强运转。
+
+但在 AI coding agent 时代，这会暴露出新的问题：
+
+> AI Agent 能看到代码，却经常看不到完整项目。
+
+因此，AI Agent 可能会：
+
+* 误解业务需求；
+* 引用过期文档；
+* 忽略设计约束；
+* 遗漏验收标准；
+* 不知道需求、接口、页面、测试和历史缺陷之间的关系；
+* 需要不同角色反复补充同样的背景；
+* 更像一个“开发助手”，而不是项目级协作者。
+
+Context Compiler 探索的是另一种模式：
+
+> 项目仓库应该从“代码仓库”升级为“AI 可协作的项目工作空间”。
 
 ---
 
 ## 核心想法
 
-这个项目工作空间不是简单地把所有资料塞进一个大仓库。
+Context Compiler 不要求产品、设计、测试和开发改变原有工作方式，也不要求所有人都改用 Markdown 或工程化格式。
 
-它的核心思想是：
+它的基本思路是：
 
-> 人类继续用自己习惯的方式维护资料；\
-> AI 不直接消费混乱的人类资料；\
-> 通过 Context Compiler 将产品、设计、测试、代码等资料编译成 AI 可读的结构化上下文；\
-> 不同角色的 AI Agent 基于各自的角色视图进行协作；\
-> Claude Code、Codex、Cursor 等 AI Agent 基于这些上下文、项目级 Skill、MCP 和 Agent 规则进行工作。
+1. 人类继续使用自己习惯的工具；
+2. Context Compiler 从多个来源采集项目资料；
+3. 对资料进行解析、标准化、关联、校验和压缩；
+4. 生成项目级 Context Graph；
+5. 输出角色视图、任务上下文、诊断报告和 Agent Skill Pack；
+6. AI Agent 通过文件、MCP 或 Agent 工具集成来消费这些上下文。
 
-换句话说：
-
-```text
-产品资料
-设计资料
-测试资料
-前端代码
-后端代码
-自动化测试
+```txt
+产品文档
+设计说明
+源代码
+接口定义
+测试用例
 历史缺陷
 运行日志
+会议纪要
    ↓
 Context Compiler
    ↓
-/工作区/AI/领域上下文
-/工作区/AI/角色视图
+Project Context Graph
    ↓
-产品 Agent / 设计 Agent / 前端 Agent / 后端 Agent / 测试 Agent / Reviewer Agent
+Role Views / Task Context / Diagnostics / Agent Skill Packs
    ↓
-需求分析、设计校验、编码、测试、评审、交付
+Product Agent / Design Agent / Frontend Agent / Backend Agent / Test Agent / Reviewer Agent
 ```
 
-这个模式的目标不是替代产品、设计、测试或开发，而是减少低效的上下文转述，让 AI 更可靠地参与多角色工程协作。
+核心原则是：
+
+> AI 不应该直接消费混乱的人类资料。
+> AI 应该消费经过编译的、结构化的、可追溯的、按角色组织的项目上下文。
 
 ---
 
-## 一句话定义
+## Context Compiler 生成什么？
 
-> 面向 AI 协作的项目工作空间，是一种以项目目标为边界、以角色视图为入口、以 Context Compiler 为转换层的协作结构。它保留产品、设计、开发、测试等角色的原生工作方式，同时将各角色资料和工程实现编译成适合不同角色 Agent 使用的 AI 上下文。
+Context Compiler 可以生成多种上下文产物。
 
----
+### 1. Project Brief
 
-## 核心不是“让其他角色服务开发”
+项目级摘要，包括：
 
-这个提案很容易被误解成：
+* 项目目标；
+* 业务领域；
+* 用户角色；
+* 技术栈；
+* 仓库结构；
+* 全局约束；
+* 当前交付目标。
 
-> 产品、设计、测试把资料整理好，是为了让开发 Agent 更好写代码。
+### 2. Domain Context
 
-这只是其中一个场景，但不是全部。
+按业务领域组织的上下文，例如：
 
-更完整的理解是：
-
-> 每个角色都维护自己的原始资料；\
-> 每个角色也都可以使用 AI 来理解其他角色的工作成果；\
-> Context Compiler 负责把其他角色的信息编译成当前角色可理解、可行动的 AI 上下文视图。
-
-例如：
-
-### 当开发角色使用 AI 时
-
-产品、设计、测试资料会被编译成有助于编码的上下文：
-
-```text
-/工作区/AI/角色视图/for-frontend.generated.md
-/工作区/AI/角色视图/for-backend.generated.md
+```txt
+auth/
+order/
+payment/
+inventory/
+notification/
+admin/
 ```
 
-前端 Agent 需要理解：
+每个领域可以包含：
 
-- 当前需求；
-- 页面流程；
-- 交互规则；
-- API 契约；
-- 测试验收标准；
-- 组件复用建议。
+* 领域目标；
+* 核心业务规则；
+* 相关需求；
+* 相关页面；
+* 相关接口；
+* 相关服务；
+* 相关数据库表；
+* 相关测试；
+* 已知风险；
+* 历史决策。
 
-后端 Agent 需要理解：
+### 3. Role Views
 
-- 业务规则；
-- 领域模型；
-- API 契约；
-- 前端调用方；
-- 幂等性和一致性要求；
-- 测试风险和验收点。
+不同角色需要不同上下文。
 
-### 当产品角色使用 AI 时
+Context Compiler 可以输出面向不同角色的视图：
 
-前端、后端、设计、测试等模块也应该被编译成有助于产品理解项目状态的上下文：
+* Product Agent；
+* Design Agent；
+* Frontend Agent；
+* Backend Agent；
+* Test Agent；
+* Reviewer Agent。
 
-```text
-/工作区/AI/角色视图/for-product.generated.md
+示例：
+
+```txt
+.context/views/product.md
+.context/views/design.md
+.context/views/frontend.md
+.context/views/backend.md
+.context/views/tester.md
+.context/views/reviewer.md
 ```
 
-产品 Agent 可以回答：
+### 4. Task Context
 
-- 哪些需求已经实现？
-- 哪些需求仍未覆盖？
-- 当前代码中有哪些页面、接口、数据模型与某个需求相关？
-- 测试是否覆盖了关键验收标准？
-- 最近代码变更可能影响哪些产品能力？
-- 当前实现和 PRD 是否存在不一致？
-- code graph / service graph / page graph 如何映射到产品语义？
+针对具体任务，Context Compiler 可以生成聚焦的任务上下文包。
 
-### 当设计角色使用 AI 时
-
-设计 Agent 可以通过前端代码、页面图谱、组件图谱、产品上下文理解：
-
-- 当前页面实现状态；
-- 哪些组件已经存在；
-- 哪些交互已经实现；
-- 设计稿和代码实现是否存在差异；
-- 哪些设计变更会影响前端、后端或测试；
-- 某个用户流程是否被完整支持。
-
-### 当测试角色使用 AI 时
-
-测试 Agent 可以通过产品、设计、前端、后端和历史缺陷上下文理解：
-
-- 某个需求的验收标准；
-- 哪些页面流程需要回归；
-- 哪些 API 和服务被影响；
-- 哪些历史缺陷可能复发；
-- 哪些需求没有自动化测试覆盖；
-- 如何生成测试数据；
-- 本次代码变更的风险矩阵。
-
-因此，AI 上下文不是单向的：
-
-```text
-产品 / 设计 / 测试 → 开发
-```
-
-而是多向的：
-
-```text
-产品 ↔ 设计 ↔ 前端 ↔ 后端 ↔ 测试
-        ↓
-   Context Compiler
-        ↓
-   Role-specific AI Context
-```
-
----
-
-## 设计原则
-
-### 1. 人类资料保持原生形态
-
-产品、设计、测试等人工维护目录不限制格式。
-
-它们可以是：
-
-- Markdown
-- Word
-- PDF
-- PPT
-- Excel
-- XMind
-- 图片
-- Figma 导出物
-- 流程图
-- 接口集合
-- HAR 抓包
-- 日志
-- 会议纪要
-- 缺陷复盘
-
-原因很简单：
-
-> 不能为了让 AI 舒服，而强迫整个组织改变已有工作习惯。
-
-AI-native 工作空间应该降低协作成本，而不是增加产品、设计、测试同学的负担。
-
----
-
-### 2. AI 默认读取编译后的上下文
-
-普通 AI Agent 默认不直接读取人工资料目录。
-
-例如，普通开发 Agent 不应该直接读取：
-
-```text
-../产品
-../设计
-../测试
-```
-
-它应该优先读取：
-
-```text
-工作区/AI
-```
-
-只有以下情况才允许回溯人工资料：
-
-1. 用户明确要求查看原始资料；
-2. `/AI` 上下文缺失或冲突；
-3. 当前任务是生成或修复 AI 上下文；
-4. 当前 Agent 是 Context Compiler Agent；
-5. 人工审核要求追溯来源。
-
----
-
-### 3. AI 上下文是编译产物，不是人工维护资料
-
-`/工作区/AI` 下的内容由工具生成，默认不手工修改。
-
-例如：
-
-```text
-/工作区/AI/产品/requirements.generated.md
-/工作区/AI/测试/acceptance-map.generated.md
-/工作区/AI/后端/api-contracts.generated.md
-/工作区/AI/角色视图/for-backend.generated.md
-/工作区/AI/角色视图/for-product.generated.md
-```
-
-如果生成内容有错，应该回到人工资料或 Context Compiler 规则中修正，然后重新生成，而不是直接改 generated 文件。
-
----
-
-### 4. 领域上下文和角色视图要分开
-
-`/AI` 目录至少应该包含两类内容：
-
-```text
-领域上下文：某个领域当前是什么状态？
-角色视图：某个角色为了完成自己的工作，需要从其他领域理解什么？
-```
-
-例如：
-
-```text
-/工作区/AI/产品
-/工作区/AI/设计
-/工作区/AI/前端
-/工作区/AI/后端
-/工作区/AI/测试
-```
-
-这些是领域上下文。
-
-```text
-/工作区/AI/角色视图/for-product.generated.md
-/工作区/AI/角色视图/for-designer.generated.md
-/工作区/AI/角色视图/for-frontend.generated.md
-/工作区/AI/角色视图/for-backend.generated.md
-/工作区/AI/角色视图/for-test.generated.md
-/工作区/AI/角色视图/for-reviewer.generated.md
-```
-
-这些是角色视图。
-
-领域上下文回答：
-
-> 产品、设计、前端、后端、测试各自当前是什么状态？
-
-角色视图回答：
-
-> 某个角色为了完成自己的工作，需要理解其他领域的哪些内容？
-
----
-
-### 5. 尽量使用官方支持的 AI 工具机制
-
-这个工作空间不希望发明一套完全孤立的插件系统。
-
-因此，Claude Code、Codex 等工具已经支持的项目级能力，应该尽量按官方方式使用：
-
-- Claude Code：
-
-  - `CLAUDE.md`
-  - `.claude/settings.json`
-  - `.claude/skills/*/SKILL.md`
-  - `.claude/agents/*.md`
-  - `.claude/commands/*.md`
-  - `.mcp.json`
-
-- Codex：
-
-  - `AGENTS.md`
-  - `.codex/config.toml`
-  - `.codex/agents/*.toml`
-  - `.agents/skills/*/SKILL.md`
-
-`/AI` 只负责存放生成给 AI 使用的上下文，不负责替代官方插件、Skill、MCP 或 Agent 机制。
-
----
-
-### 6. Skill 是方法，MCP 是工具，AI 上下文是资料
-
-这三者需要清晰分开：
-
-| 类型       | 作用                                      | 推荐位置                                           |
-| -------- | --------------------------------------- | ---------------------------------------------- |
-| AI 上下文   | 告诉 Agent 当前项目是什么、有哪些需求、接口、测试、风险         | `/工作区/AI`                                      |
-| 角色视图     | 告诉某个角色应该如何理解其他角色的信息                     | `/工作区/AI/角色视图`                                 |
-| Skill    | 告诉 Agent 某类任务应该怎么做                      | `.claude/skills`、`.agents/skills`              |
-| MCP      | 给 Agent 提供可调用工具，如文档查询、代码搜索、GitLab、上下文编译 | `.mcp.json`、`.codex/config.toml`、`scripts/mcp` |
-| Subagent | 定义特定职责的 Agent，如后端实现、测试分析、上下文编译          | `.claude/agents`、`.codex/agents`               |
-
----
-
-## 当前建议目录结构
-
-下面是当前提案中的一个初始目录结构。
-
-它不是最终答案，而是一个供社区讨论的起点。
-
-```text
-项目根/
-  README.md
-
-  /产品
-    /需求文档
-    /业务规则
-    /用户调研
-    /会议纪要
-    /竞品分析
-    /原型截图
-    /历史归档
-
-  /设计
-    /原型
-    /交互说明
-    /视觉规范
-    /流程图
-    /页面截图
-    /历史归档
-
-  /测试
-    /测试计划
-    /测试设计
-    /测试用例
-    /缺陷复盘
-    /造数说明
-    /环境说明
-    /接口集合
-    /抓包记录
-    /历史归档
-
-  /工作区
-    README.md
-
-    AGENTS.md
-    CLAUDE.md
-    CODEX.md
-
-    .mcp.json
-
-    /.claude
-      settings.json
-      settings.local.json
-
-      /skills
-        /context-reading
-          SKILL.md
-        /impact-analysis
-          SKILL.md
-        /context-compiler
-          SKILL.md
-        /requirement-change-sync
-          SKILL.md
-        /frontend-page-implementation
-          SKILL.md
-        /backend-api-implementation
-          SKILL.md
-        /regression-scope-analysis
-          SKILL.md
-        /mr-review
-          SKILL.md
-        /security-review
-          SKILL.md
-
-      /agents
-        product-context-compiler.md
-        design-context-compiler.md
-        test-context-compiler.md
-        frontend-implementer.md
-        backend-implementer.md
-        reviewer.md
-
-      /commands
-        generate-ai-context.md
-        review-mr.md
-        analyze-impact.md
-
-    /.codex
-      config.toml
-
-      /agents
-        product-context-compiler.toml
-        design-context-compiler.toml
-        test-context-compiler.toml
-        frontend-implementer.toml
-        backend-implementer.toml
-        reviewer.toml
-
-    /.agents
-      /skills
-        /context-reading
-          SKILL.md
-        /impact-analysis
-          SKILL.md
-        /context-compiler
-          SKILL.md
-        /requirement-change-sync
-          SKILL.md
-        /frontend-page-implementation
-          SKILL.md
-        /backend-api-implementation
-          SKILL.md
-        /regression-scope-analysis
-          SKILL.md
-        /mr-review
-          SKILL.md
-        /security-review
-          SKILL.md
-
-    /AI
-      /全局
-        workspace-index.generated.md
-        source-manifest.generated.json
-        traceability.generated.md
-        open-questions.generated.md
-        deprecated-context.generated.md
-        context-health.generated.md
-
-      /产品
-        context.generated.md
-        requirements.generated.md
-        business-rules.generated.md
-        glossary.generated.md
-        product-decisions.generated.md
-        open-questions.generated.md
-
-      /设计
-        context.generated.md
-        page-flows.generated.md
-        interaction-rules.generated.md
-        component-map.generated.md
-        design-decisions.generated.md
-        open-questions.generated.md
-
-      /前端
-        context.generated.md
-        page-map.generated.md
-        component-map.generated.md
-        route-map.generated.md
-        state-management.generated.md
-        api-usage.generated.md
-        frontend-risks.generated.md
-        code-graph.generated.json
-        dependency-map.generated.md
-
-      /后端
-        context.generated.md
-        architecture.generated.md
-        api-contracts.generated.md
-        domain-model.generated.md
-        database-map.generated.md
-        service-map.generated.md
-        backend-risks.generated.md
-        code-graph.generated.json
-        dependency-map.generated.md
-
-      /测试
-        context.generated.md
-        acceptance-map.generated.md
-        risk-matrix.generated.md
-        test-cases.generated.md
-        test-data-guide.generated.md
-        regression-scope.generated.md
-        known-bugs.generated.md
-
-      /角色视图
-        for-product.generated.md
-        for-designer.generated.md
-        for-frontend.generated.md
-        for-backend.generated.md
-        for-test.generated.md
-        for-reviewer.generated.md
-
-      /报告
-        2026-05-29-上下文生成报告.md
-
-    /前端
-      /web
-      /admin
-      /mobile
-      /shared-ui
-
-    /后端
-      /services
-      /api-gateway
-      /jobs
-      /shared
-
-    /testing
-      /integration
-      /e2e
-      /contract
-      /fixtures
-      /data-factory
-
-    /scripts
-      /context-compiler
-        package.json
-        src/
-
-      /mcp
-        /context-compiler-mcp
-        /code-search-mcp
-        /gitlab-mcp
-
-      generate-ai-context.ts
-      validate-context.ts
-      check-traceability.ts
-      sync-skills.ts
-
-    /infra
-      docker-compose.yml
-      k8s/
-      terraform/
-
-    /.context-cache
-      /产品
-      /设计
-      /测试
-      /前端
-      /后端
-```
-
----
-
-## 为什么把 `/工作区` 单独拿出来？
-
-这个设计中，Claude Code、Codex 等 AI coding agent 默认打开：
-
-```text
-项目根/工作区
-```
-
-而不是打开项目根目录。
-
-这样做的原因是：
-
-1. 防止普通 Agent 默认扫描外层人工资料；
-2. 把 AI 运行环境和工程源码放在一个明确边界内；
-3. 让 `/产品`、`/设计`、`/测试` 成为 Context Compiler 的输入，而不是普通 Agent 的直接上下文；
-4. 更容易配置 Claude/Codex 的项目级规则、MCP、Skills 和 Subagents；
-5. 更容易在未来支持不同 AI 工具接入。
-
-整体关系如下：
-
-```text
-项目根/
-  /产品      人类维护的产品资料
-  /设计      人类维护的设计资料
-  /测试      人类维护的测试资料
-
-  /工作区    Claude / Codex / Cursor 等 AI Agent 的工作目录
-    /AI      编译后的 AI 上下文
-    /前端    前端源码
-    /后端    后端源码
-```
-
----
-
-## `/AI` 目录的作用
-
-`/工作区/AI` 是多角色 AI 上下文目录。
-
-它不是人工资料目录，也不是只给开发 Agent 使用的目录。
-
-它应该由 Context Compiler 从产品、设计、前端、后端、测试等资料中生成，服务不同角色的 AI 协作需求。
-
-例如：
-
-- 产品角色使用 `/AI/角色视图/for-product.generated.md` 理解当前代码实现、测试覆盖和需求落地状态；
-- 设计角色使用 `/AI/角色视图/for-designer.generated.md` 理解页面、组件、交互实现和设计差异；
-- 前端角色使用 `/AI/角色视图/for-frontend.generated.md` 理解需求、设计、接口和测试验收；
-- 后端角色使用 `/AI/角色视图/for-backend.generated.md` 理解业务规则、接口契约、前端调用方和测试风险；
-- 测试角色使用 `/AI/角色视图/for-test.generated.md` 理解产品验收、设计流程、前后端实现和回归范围；
-- Reviewer 角色使用 `/AI/角色视图/for-reviewer.generated.md` 进行 MR 风险评估、测试覆盖检查和需求一致性检查。
-
-因此，`/AI` 目录包含两类核心内容：
-
-1. 领域上下文，例如 `/AI/产品`、`/AI/设计`、`/AI/前端`、`/AI/后端`、`/AI/测试`；
-2. 角色视图，例如 `/AI/角色视图/for-product.generated.md`、`for-backend.generated.md`、`for-test.generated.md`。
-
-领域上下文回答：
-
-> 某个领域当前是什么状态？
-
-角色视图回答：
-
-> 某个角色为了完成自己的工作，需要从其他领域理解什么？
-
----
-
-## 角色视图示例
-
-### `/AI/角色视图/for-product.generated.md`
-
-给产品角色使用。
-
-来源可以包括：
-
-- `/AI/前端`
-- `/AI/后端`
-- `/AI/测试`
-- `/AI/设计`
-- code graph
-- service graph
-- API graph
-- test coverage graph
-
-内容可以包括：
-
-- 需求实现状态；
-- 页面与需求映射；
-- 接口与需求映射；
-- 当前能力边界；
-- 已知技术约束；
-- 测试覆盖情况；
-- 最近变更影响的产品能力；
-- 未实现或实现不一致的需求；
-- 代码结构如何映射到产品能力。
-
-### `/AI/角色视图/for-designer.generated.md`
-
-给设计角色使用。
-
-来源可以包括：
-
-- `/AI/产品`
-- `/AI/前端`
-- `/AI/测试`
-- 页面图谱
-- 组件图谱
-
-内容可以包括：
-
-- 页面清单；
-- 用户流程；
-- 组件复用情况；
-- 当前交互实现约束；
-- 已上线页面状态；
-- 设计稿与实现差异；
-- 设计变更可能影响的前端模块和测试范围。
-
-### `/AI/角色视图/for-frontend.generated.md`
-
-给前端角色使用。
-
-来源可以包括：
-
-- `/AI/产品`
-- `/AI/设计`
-- `/AI/后端`
-- `/AI/测试`
-
-内容可以包括：
-
-- 当前需求；
-- 页面流程；
-- 交互规则；
-- API 契约；
-- 验收标准；
-- 相关测试；
-- 组件复用建议；
-- UI 风险点。
-
-### `/AI/角色视图/for-backend.generated.md`
-
-给后端角色使用。
-
-来源可以包括：
-
-- `/AI/产品`
-- `/AI/前端`
-- `/AI/测试`
-- service graph
-- database graph
-
-内容可以包括：
-
-- 业务规则；
-- 领域模型；
-- API 契约；
-- 前端调用方；
-- 幂等性和一致性要求；
-- 数据库影响；
-- 测试验收点；
-- 风险边界。
-
-### `/AI/角色视图/for-test.generated.md`
-
-给测试角色使用。
-
-来源可以包括：
-
-- `/AI/产品`
-- `/AI/设计`
-- `/AI/前端`
-- `/AI/后端`
-- 历史缺陷
-- code graph
-
-内容可以包括：
-
-- 验收标准；
-- 页面路径；
-- API 流程；
-- 风险矩阵；
-- 测试数据建议；
-- 回归范围；
-- 代码变更影响面；
-- 历史缺陷复发风险。
-
-### `/AI/角色视图/for-reviewer.generated.md`
-
-给 Reviewer 使用。
-
-来源可以包括：
-
-- `/AI/产品`
-- `/AI/设计`
-- `/AI/前端`
-- `/AI/后端`
-- `/AI/测试`
-- MR diff
-- code graph
-- test coverage
-
-内容可以包括：
-
-- 本次变更关联需求；
-- 受影响页面、接口、服务、测试；
-- 缺少测试覆盖的风险；
-- 需求和实现不一致之处；
-- 代码复杂度或安全风险；
-- 是否违反 generated 文件规则；
-- 是否误读或越权读取人工资料。
-
----
-
-## Context Compiler 是什么？
-
-Context Compiler 是这个提案中的关键组件。
-
-它负责读取人工资料目录：
-
-```text
-../产品
-../设计
-../测试
-```
-
-以及必要时读取工程源码：
-
-```text
-/前端
-/后端
-/testing
-```
-
-然后生成：
-
-```text
-/工作区/AI
-```
-
-它应该具备以下能力：
-
-1. 多格式解析：PDF、PPT、Word、Excel、XMind、图片、Markdown、HTML、JSON；
-2. OCR 和截图理解；
-3. 需求抽取；
-4. 业务规则抽取；
-5. 术语抽取；
-6. 设计流程和页面关系抽取；
-7. 测试点和测试用例抽取；
-8. 代码结构扫描；
-9. code graph / dependency graph / service graph 生成；
-10. 接口契约生成；
-11. 冲突检测；
-12. 过期信息识别；
-13. 追踪关系生成；
-14. 按角色生成不同 AI 视图；
-15. 输出生成报告，供人审核。
-
-它的定位类似：
-
-```text
-人工资料 + 工程实现 = 源码
-Context Compiler = 编译器
-/AI = 编译产物
-Agent = 运行时消费者
-```
-
----
-
-## 推荐的 Agent 访问规则
-
-普通 Agent 默认允许读取：
-
-```text
-/AI
-/前端
-/后端
-/testing
-/scripts
-/infra
-```
-
-普通 Agent 默认禁止读取：
-
-```text
-../产品
-../设计
-../测试
-../**/历史归档/**
-```
-
-原因是人工资料中可能包含：
-
-- 历史方案；
-- 草稿；
-- 会议临时结论；
-- 过期设计；
-- 未确认需求；
-- 未结构化描述；
-- 敏感信息；
-- 不适合直接给 AI 消费的上下文。
-
-只有 Context Compiler Agent 或明确授权任务可以读取人工资料目录。
-
----
-
-## 推荐接入的 AI 工具能力
-
-这个工作空间可以接入当前 AI coding 生态中的几类能力。
-
-### 1. Project Skills
-
-项目级 Skill 用于沉淀“如何完成某类任务”。
-
-例如：
-
-```text
-context-reading
-impact-analysis
-context-compiler
-requirement-change-sync
-frontend-page-implementation
-backend-api-implementation
-regression-scope-analysis
-mr-review
-security-review
-```
-
-Skill 不是上下文资料，而是任务方法。
-
-例如 `backend-api-implementation` 应该告诉 Agent：
-
-1. 先读哪些 AI 上下文；
-2. 如何确认需求 ID；
-3. 如何查接口契约；
-4. 如何修改后端代码；
-5. 如何补测试；
-6. 如何输出风险和待确认问题。
-
-而 `requirement-change-sync` 应该告诉产品 Agent：
-
-1. 如何读取 `for-product.generated.md`；
-2. 如何理解当前代码实现状态；
-3. 如何判断需求是否已有对应页面、接口和测试；
-4. 如何提出需求变更的影响范围；
-5. 如何生成待开发、待设计、待测试的事项。
-
----
-
-### 2. MCP Servers
-
-MCP 用于给 Agent 提供工具能力，例如：
-
-- 最新技术文档查询；
-- 代码语义搜索；
-- GitLab MR 查询和评审；
-- 项目上下文编译；
-- 影响分析；
-- 测试数据生成。
-
-推荐接入的 MCP 类型：
-
-```text
-context7             查询最新库文档
-code-search          语义代码搜索
-context-compiler     编译产品/设计/测试/代码到 /AI
-gitlab               查询 MR、Issue、Pipeline
-```
-
----
-
-### 3. Code Graph / Knowledge Graph
-
-AI Agent 不应该每次都全仓库扫描。
-
-更合理的是生成代码图谱和项目图谱，例如：
-
-```text
-/AI/前端/component-map.generated.md
-/AI/前端/route-map.generated.md
-/AI/后端/service-map.generated.md
-/AI/后端/domain-model.generated.md
-/AI/全局/traceability.generated.md
-```
-
-这能让不同角色的 Agent 更快理解项目结构和影响范围。
-
-例如：
-
-- 开发 Agent 用 code graph 理解实现位置；
-- 产品 Agent 用 code graph 理解某个需求是否已经落地；
-- 测试 Agent 用 code graph 判断回归范围；
-- Reviewer Agent 用 code graph 检查 MR 影响面。
-
----
-
-### 4. Multi-format Document Parsing
-
-由于人工资料不限制格式，Context Compiler 必须支持多格式输入。
-
-它可以集成：
-
-- PDF parser
-- DOCX parser
-- PPTX parser
-- XLSX parser
-- XMind parser
-- OCR
-- 图片理解
-- Markdown parser
-- HTML parser
-
-这部分能力决定了这个工作空间能否真正低成本落地。
-
----
-
-## 一个典型工作流：开发角色
-
-### 场景：产品修改了退款需求，后端需要实现
-
-1. 产品同学更新：
-
-```text
-/产品/需求文档/退款流程需求说明.pdf
-/产品/会议纪要/退款需求评审纪要.docx
-```
-
-2. 运行 Context Compiler：
+示例：
 
 ```bash
-cd 工作区
-npm run ai:context
+context task "支持订单部分退款" --role backend
 ```
 
-3. 工具生成：
+可能输出：
 
-```text
-/工作区/AI/产品/requirements.generated.md
-/工作区/AI/产品/business-rules.generated.md
-/工作区/AI/测试/acceptance-map.generated.md
-/工作区/AI/角色视图/for-backend.generated.md
-/工作区/AI/报告/上下文生成报告.md
+```txt
+.context/tasks/support-partial-refund.backend.md
 ```
 
-4. 后端 Agent 读取：
+一个任务上下文可能包含：
 
-```text
-/AI/角色视图/for-backend.generated.md
-/AI/产品/requirements.generated.md
-/AI/后端/api-contracts.generated.md
-/AI/测试/acceptance-map.generated.md
-```
+* 相关需求；
+* 业务规则；
+* 验收标准；
+* 相关接口；
+* 相关服务；
+* 相关数据库表；
+* 相关测试；
+* 历史缺陷；
+* 风险点；
+* 推荐验证步骤；
+* 不应破坏的约束。
 
-5. 后端 Agent 修改代码：
+### 5. Diagnostics
 
-```text
-/后端
-/testing
-```
+Context Compiler 可以检测上下文质量问题，例如：
 
-6. Reviewer Agent 根据 `/AI` 和代码变更进行 MR 评审。
+* 需求缺少验收标准；
+* 需求缺少测试覆盖；
+* 设计稿没有关联任何实现；
+* PRD 中提到的接口在 OpenAPI 中不存在；
+* 前端调用了未定义的后端接口；
+* 过期上下文仍被引用；
+* 业务规则之间存在冲突；
+* 历史缺陷缺少回归测试。
+
+### 6. Agent Skill Packs
+
+Context Compiler 可以为不同 AI coding agent 输出专用上下文或规则包，例如：
+
+* Claude Code；
+* Codex；
+* Cursor；
+* Copilot；
+* Gemini CLI；
+* 其他 AI coding agent。
 
 ---
 
-## 一个典型工作流：产品角色
+## Project Context Graph
 
-### 场景：产品想确认某个需求当前是否已经完整落地
+Context Compiler 的核心是 **Project Context Graph**。
 
-1. Context Compiler 扫描代码、测试和设计上下文：
+它不是把文档切成孤立文本块，而是把项目知识建模成相互连接的软件工程对象。
 
-```text
-/工作区/前端
-/工作区/后端
-/工作区/testing
-/工作区/AI/设计
-/工作区/AI/测试
+示例节点类型：
+
+```txt
+Requirement
+BusinessRule
+AcceptanceCriteria
+DesignFrame
+UserFlow
+Page
+Component
+API
+Service
+DomainModel
+DatabaseTable
+BackgroundJob
+TestCase
+Bug
+Decision
+Risk
+Release
+CodeSymbol
 ```
 
-2. 生成产品角色视图：
+示例关系：
 
-```text
-/工作区/AI/角色视图/for-product.generated.md
+```txt
+Requirement -> has_acceptance_criteria -> AcceptanceCriteria
+Requirement -> designed_by -> DesignFrame
+Requirement -> implemented_by -> CodeSymbol
+Requirement -> verified_by -> TestCase
+Requirement -> affected_by -> Bug
+
+DesignFrame -> maps_to -> Page
+Page -> uses -> Component
+Component -> calls -> API
+API -> handled_by -> Service
+Service -> reads_writes -> DatabaseTable
+TestCase -> covers -> Requirement
+Bug -> requires_regression_test -> TestCase
+Decision -> supersedes -> Decision
 ```
 
-3. 产品 Agent 可以基于这个角色视图回答：
+这个图谱可以帮助 AI Agent 回答：
 
-```text
-RQ-REFUND-001 部分退款是否已经实现？
-哪些页面支持了它？
-哪些接口支持了它？
-哪些测试覆盖了它？
-还有哪些缺口？
-最近一个 MR 会不会影响这个需求？
-```
-
-4. 如果发现需求和实现不一致，产品可以发起：
-
-```text
-需求澄清
-需求变更
-设计补充
-开发任务
-测试补充
-```
-
-而不是通过会议反复追问每个角色。
+* 这个需求涉及哪些接口？
+* 这个后端改动会影响哪些前端页面？
+* 这个需求是否有测试覆盖？
+* 修改这段逻辑前需要注意哪些历史缺陷？
+* 这个设计稿是否仍然有效？
+* 这个 PR 是否破坏了某条历史业务规则？
 
 ---
 
-## 一个典型工作流：测试角色
+## 技术架构
 
-### 场景：测试需要判断某次代码变更的回归范围
+一个典型的 Context Compiler 架构如下：
 
-1. Context Compiler 读取：
-
-```text
-/工作区/AI/产品
-/工作区/AI/设计
-/工作区/AI/前端
-/工作区/AI/后端
-/工作区/后端 code graph
-/工作区/前端 code graph
-/测试/缺陷复盘
+```txt
+┌──────────────────────────────────────────────┐
+│              Human Work Sources              │
+│ PRD / Figma / Issues / Code / Tests / Logs   │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Source Connectors               │
+│ Feishu / Notion / Figma / Git / Jira / etc.  │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Normalization Layer             │
+│ Docs / Design Nodes / Code Symbols / Tests   │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Compiler Core                   │
+│ Parse / Classify / Link / Validate / Compress│
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Project Context Graph           │
+│ Requirement ↔ Design ↔ API ↔ Code ↔ Test     │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Context Artifacts               │
+│ Role Views / Task Context / Diagnostics      │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Agent Runtime Integration       │
+│ Claude Code / Codex / Cursor / MCP / CI      │
+└──────────────────────────────────────────────┘
 ```
 
-2. 生成测试角色视图：
+---
 
-```text
-/工作区/AI/角色视图/for-test.generated.md
-/工作区/AI/测试/regression-scope.generated.md
-/工作区/AI/测试/risk-matrix.generated.md
+## Compiler Pipeline
+
+Context Compiler 采用类似编译器的流水线：
+
+```txt
+Ingest
+  ↓
+Parse
+  ↓
+Normalize
+  ↓
+Classify
+  ↓
+Link
+  ↓
+Validate
+  ↓
+Compress
+  ↓
+Emit
 ```
 
-3. 测试 Agent 可以回答：
+### Ingest
 
-```text
-这次改动影响哪些功能？
-哪些页面需要回归？
-哪些接口需要回归？
-哪些历史缺陷可能复发？
-哪些测试用例需要新增或更新？
-是否缺少自动化测试？
-```
+从不同工具中采集项目资料。
 
----
+可能的数据源包括：
 
-## 这个提案想解决什么？
+* Git 仓库；
+* Markdown 文档；
+* OpenAPI 文档；
+* 设计文件；
+* Issue 系统；
+* 测试用例系统；
+* CI 报告；
+* 运行日志；
+* 会议纪要。
 
-### 1. 减少跨角色重复沟通
+### Parse
 
-以前很多会议本质上是同步上下文。
-
-现在上下文可以被结构化沉淀、生成、追踪和审查。
-
----
-
-### 2. 降低 AI coding 的幻觉和误读
-
-Agent 不直接读混乱原始资料，而是读经过编译和校验的上下文。
-
----
-
-### 3. 保留传统团队工作方式
-
-产品、设计、测试不需要立刻改变自己的工作工具。
-
-他们只需要把资料放到正确位置，并审核生成报告。
-
----
-
-### 4. 让需求、设计、代码、测试可追踪
+将原始资料解析成结构化中间对象。
 
 例如：
 
-```text
-RQ-REFUND-001
-  → PAGE-REFUND-DETAIL
-  → API-REFUND-CREATE
-  → SERVICE-order-service
-  → TC-REFUND-003
+* Markdown 章节；
+* OpenAPI 操作；
+* 源码符号；
+* 测试用例记录；
+* 设计稿 Frame；
+* Issue 条目。
+
+### Normalize
+
+将不同来源的资料转换成统一的上下文块。
+
+### Classify
+
+将上下文块分类为不同类型，例如：
+
+* requirement；
+* business rule；
+* acceptance criteria；
+* design spec；
+* API contract；
+* test case；
+* bug；
+* decision；
+* risk；
+* code symbol。
+
+### Link
+
+建立上下文对象之间的关系，例如：
+
+* 需求关联接口；
+* 接口关联后端服务；
+* 页面关联组件；
+* 需求关联测试用例；
+* 缺陷关联回归测试；
+* 设计稿关联前端路由。
+
+### Validate
+
+执行一致性和质量检查，例如：
+
+* 缺少验收标准；
+* 缺少测试覆盖；
+* 接口不一致；
+* 使用过期上下文；
+* 需求冲突。
+
+### Compress
+
+生成不同粒度的 AI 可读上下文：
+
+* 项目级；
+* 领域级；
+* 角色级；
+* 任务级。
+
+### Emit
+
+将上下文输出为本地文件、JSONL、Markdown、MCP 工具、CI 报告或 Agent 专用配置。
+
+---
+
+## 推荐输出目录
+
+一个编译后的项目可以包含：
+
+```txt
+.context/
+  context-manifest.json
+
+  views/
+    project.md
+    product.md
+    design.md
+    frontend.md
+    backend.md
+    tester.md
+    reviewer.md
+
+  domains/
+    auth.md
+    order.md
+    payment.md
+
+  tasks/
+    TASK-1234.backend.md
+    TASK-1234.tester.md
+
+  graph/
+    nodes.jsonl
+    edges.jsonl
+    diagnostics.jsonl
+
+  indexes/
+    vector.index
+    symbol.index
+    api.index
+
+  artifacts/
+    claude-code/
+    cursor/
+    codex/
+
+  cache/
 ```
 
-这种追踪关系非常适合 AI 使用，也非常适合 MR Review、回归分析和影响分析。
-
 ---
 
-### 5. 为多 Agent 协作打基础
+## Context Manifest 示例
 
-未来不同 Agent 可以承担不同职责：
-
-- Product Context Compiler
-- Design Context Compiler
-- Test Context Compiler
-- Frontend Implementer
-- Backend Implementer
-- Reviewer
-- Security Reviewer
-- Regression Analyzer
-- Product Analyst
-- Design Reviewer
-
-它们不再凭临时 prompt 工作，而是基于统一工作空间、项目级 Skill、MCP 和 AI 上下文协同。
-
----
-
-### 6. 让每个角色都能使用 AI 理解其他角色的成果
-
-产品不需要读代码也能理解实现状态。
-
-测试不需要逐个问开发也能理解变更影响。
-
-设计不需要翻源码也能理解组件和页面实现。
-
-开发不需要反复开会也能理解需求、设计和测试验收。
-
-这才是面向 AI 协作的项目工作空间最重要的价值。
-
----
-
-## 当前仍然不确定的问题
-
-这个提案还不成熟，很多问题需要讨论。
-
-### 1. `/工作区` 是否是最合适的命名？
-
-可能的名字包括：
-
-```text
-/工作区
-/工程区
-/ai-workspace
-/workspace
-/dev
+```json
+{
+  "project": "example-shop",
+  "compiledAt": "2026-06-02T10:00:00Z",
+  "compilerVersion": "0.1.0",
+  "sources": [
+    {
+      "id": "prd-order-v3",
+      "type": "prd",
+      "uri": "feishu://doc/example",
+      "status": "active",
+      "updatedAt": "2026-06-01T12:00:00Z"
+    }
+  ],
+  "views": {
+    "frontend": ".context/views/frontend.md",
+    "backend": ".context/views/backend.md",
+    "tester": ".context/views/tester.md",
+    "reviewer": ".context/views/reviewer.md"
+  },
+  "graph": {
+    "nodes": ".context/graph/nodes.jsonl",
+    "edges": ".context/graph/edges.jsonl"
+  },
+  "diagnostics": ".context/graph/diagnostics.jsonl"
+}
 ```
 
-哪一个更适合全球开发者？
+---
+
+## Role View 示例
+
+```md
+# Backend Role Context
+
+## Scope
+
+This view is optimized for backend implementation and review.
+
+## Related Domains
+
+- Auth
+- Order
+- Payment
+
+## APIs
+
+### POST /api/orders/{id}/refund
+
+Related requirement:
+
+- REQ-ORDER-REFUND-001
+
+Business rules:
+
+- Refund amount must not exceed refundable amount.
+- Refund operation must be idempotent.
+- Refunded orders must generate an audit record.
+
+Related services:
+
+- RefundService
+- OrderService
+- PaymentGatewayClient
+
+Related tests:
+
+- TC-REFUND-001
+- TC-REFUND-002
+- TC-REFUND-REGRESSION-001
+
+Historical risks:
+
+- BUG-2025-331: duplicate refund caused by retry.
+- BUG-2025-418: refund succeeded but order status was not updated.
+```
 
 ---
 
-### 2. 人工资料是否应该完全放在仓库中？
+## CLI 设想
 
-对于公司内部项目，可能存在隐私、合规和大文件问题。
+> 当前 CLI 仍处于设计阶段。
 
-是否应该支持：
+```bash
+# 初始化项目
+context init
 
-- Git LFS；
-- 外部文档链接；
-- 私有对象存储；
-- 只存 manifest，不存原文；
-- 只在本地编译，不提交原始资料？
+# 同步外部资料
+context sync
 
----
+# 编译项目上下文
+context compile
 
-### 3. `/AI` 生成产物是否应该提交到 Git？
+# 检查上下文质量
+context validate
 
-可能有两种模式：
+# 生成角色视图
+context view backend
 
-- 提交 `/AI`，让团队共享同一份 AI 上下文；
-- 不提交 `/AI`，每个人本地生成；
-- 只提交部分核心上下文；
-- CI 自动生成并作为 artifact。
+# 生成任务上下文
+context task "支持订单部分退款" --role backend
 
-这需要更多真实项目验证。
+# 解释某个上下文项的来源
+context explain REQ-ORDER-REFUND-001
 
----
+# 分析代码变更影响
+context diff --from main --to feature/partial-refund
 
-### 4. 普通 Agent 是否应该完全禁止读取人工资料？
-
-当前建议是默认禁止，但允许例外。
-
-实际项目中，可能需要更细的权限模型。
-
----
-
-### 5. Context Compiler 应该做到多强？
-
-最低可用版本可能只支持 Markdown、PDF、DOCX、XLSX。
-
-生产级版本可能需要支持：
-
-- OCR；
-- 图片理解；
-- XMind；
-- PPT；
-- Figma；
-- 接口平台；
-- GitLab；
-- Jira；
-- Confluence；
-- 飞书/Notion/语雀等。
+# 输出 Agent 专用产物
+context emit --target claude-code
+context emit --target cursor
+context emit --target codex
+```
 
 ---
 
-### 6. Skill 是否应该跨工具统一？
+## 插件系统
 
-Claude Code、Codex、Cursor、OpenCode、Gemini CLI 对 Skill、Agent、MCP 的支持方式不同。
+Context Compiler 被设计为一个可扩展系统。
 
-是否需要一个跨工具的 Project Skill 标准？
+### Connector Plugins
+
+用于连接外部数据源。
+
+示例：
+
+```txt
+connector-git
+connector-feishu
+connector-notion
+connector-confluence
+connector-figma
+connector-jira
+connector-linear
+connector-openapi
+connector-testrail
+connector-zentao
+```
+
+### Parser Plugins
+
+用于解析原始内容。
+
+示例：
+
+```txt
+parser-markdown
+parser-docx
+parser-html
+parser-openapi
+parser-source-code
+parser-xlsx
+parser-figma
+```
+
+### Linker Plugins
+
+用于构建图谱关系。
+
+示例：
+
+```txt
+linker-requirement-api
+linker-api-code
+linker-requirement-test
+linker-design-route
+linker-bug-regression
+```
+
+### Validator Plugins
+
+用于检查上下文质量。
+
+示例：
+
+```txt
+validator-missing-tests
+validator-api-mismatch
+validator-deprecated-context
+validator-design-requirement-mismatch
+validator-conflicting-rules
+```
+
+### Emitter Plugins
+
+用于输出上下文产物。
+
+示例：
+
+```txt
+emitter-markdown
+emitter-jsonl
+emitter-mcp
+emitter-claude-code
+emitter-cursor
+emitter-codex
+emitter-html-report
+```
+
+### Policy Plugins
+
+用于控制可见性、安全和隐私。
+
+示例：
+
+```txt
+policy-redaction
+policy-role-access
+policy-pii-filter
+policy-secret-filter
+policy-external-agent-filter
+```
 
 ---
 
-### 7. AI 上下文的质量如何评估？
+## 配置示例
 
-可能需要 `context-health.generated.md` 记录：
+```ts
+import { defineContextProject } from '@context-compiler/core'
 
-- 覆盖率；
-- 冲突数量；
-- 未确认问题；
-- 过期资料；
-- 需求到测试的追踪完整度；
-- 代码影响分析可信度；
-- 不同角色视图的可用性；
-- 角色视图是否过期；
-- code graph 与源码是否同步。
+export default defineContextProject({
+  project: {
+    name: 'example-shop',
+    domains: ['auth', 'order', 'payment', 'inventory'],
+    defaultLanguage: 'zh-CN'
+  },
+
+  sources: [
+    {
+      type: 'git',
+      name: 'frontend',
+      path: './apps/web'
+    },
+    {
+      type: 'git',
+      name: 'backend',
+      path: './apps/api'
+    },
+    {
+      type: 'openapi',
+      name: 'api-spec',
+      path: './openapi.yaml'
+    },
+    {
+      type: 'markdown',
+      name: 'product-docs',
+      path: './docs/product'
+    },
+    {
+      type: 'markdown',
+      name: 'test-cases',
+      path: './docs/tests'
+    }
+  ],
+
+  roles: {
+    product: {
+      include: ['requirement', 'business_rule', 'decision', 'diagnostic']
+    },
+    frontend: {
+      include: ['requirement', 'design_spec', 'api_contract', 'ui_component', 'test_case']
+    },
+    backend: {
+      include: ['requirement', 'api_contract', 'domain_model', 'database', 'test_case', 'bug']
+    },
+    tester: {
+      include: ['requirement', 'acceptance_criteria', 'test_case', 'bug', 'risk']
+    },
+    reviewer: {
+      include: ['*'],
+      diagnostics: true
+    }
+  },
+
+  policies: {
+    redact: [
+      'secret',
+      'access_token',
+      'phone_number',
+      'email',
+      'id_card'
+    ],
+    deprecatedHandling: 'warn',
+    conflictHandling: 'diagnose'
+  },
+
+  emitters: [
+    {
+      type: 'markdown',
+      outputDir: '.context/views'
+    },
+    {
+      type: 'jsonl',
+      outputDir: '.context/graph'
+    },
+    {
+      type: 'mcp',
+      port: 3921
+    }
+  ]
+})
+```
 
 ---
 
-### 8. 角色视图应该如何生成？
+## MCP 集成
 
-不同角色需要不同粒度的信息。
+Context Compiler 可以通过 MCP Server 向 AI Agent 暴露项目上下文。
 
-需要讨论：
+可能的 MCP tools：
 
-- 产品视图是否应该包含代码细节？
-- 测试视图是否应该包含完整 code graph？
-- 设计视图如何表达设计稿与实现差异？
-- 后端视图是否应该包含前端调用链？
-- Reviewer 视图是否应该融合 MR diff、测试覆盖和需求追踪？
-- 是否需要支持自定义角色？
+```txt
+get_project_brief
+get_role_view
+get_domain_context
+get_task_context
+search_context
+get_related_nodes
+get_requirement
+get_api_context
+get_test_coverage
+get_diagnostics
+explain_trace
+```
+
+请求示例：
+
+```json
+{
+  "tool": "get_task_context",
+  "input": {
+    "task": "支持订单部分退款",
+    "role": "backend",
+    "maxTokens": 12000
+  }
+}
+```
+
+响应示例：
+
+```json
+{
+  "summary": "...",
+  "requirements": [],
+  "businessRules": [],
+  "apis": [],
+  "services": [],
+  "databaseTables": [],
+  "tests": [],
+  "risks": [],
+  "recommendedChecks": []
+}
+```
 
 ---
 
-## 欢迎讨论
+## Context Governance
 
-这个仓库不是为了宣布一个标准，而是提出一个问题：
+Context Compiler 将上下文视为需要治理的工程资产，而不是简单检索结果。
 
-> AI coding agent 时代，软件项目的目录结构和协作方式应该如何变化？
+每个上下文块都应该携带元数据，例如：
 
-我希望和社区一起讨论：
+```txt
+source URI
+source type
+author
+created time
+updated time
+status
+confidence
+authority level
+effective time
+deprecation state
+owner role
+```
 
-- 这个目录是否合理？
-- `/工作区` 的边界是否清晰？
-- `/AI` 是否应该提交？
-- Context Compiler 应该如何设计？
-- 角色视图应该如何定义？
-- Claude Code、Codex、Cursor 等工具应如何共同支持项目级上下文？
-- Skill、MCP、Subagent 是否应该有更统一的跨工具标准？
-- 产品、设计、测试如何在尽量不改变工作习惯的情况下参与 AI-native 工程协作？
-- 如何让产品、设计、开发、测试都能通过 AI 理解其他角色的工作成果？
+这样 AI Agent 才能知道：
 
-欢迎提交 Issue、Proposal、PR 或替代目录结构。
+* 这条上下文来自哪里；
+* 它是否仍然有效；
+* 它是正式版本还是草稿；
+* 它是否和其他资料冲突；
+* 当前 Agent 是否有权限看到它；
+* 它是否应该被当成 source of truth 使用。
+
+---
+
+## Context Priority
+
+不同来源代表不同类型的事实。
+
+例如：
+
+```txt
+代码代表当前行为；
+PRD 代表期望行为；
+测试代表已验证行为；
+设计代表目标体验；
+缺陷代表历史风险；
+决策记录代表架构约束。
+```
+
+Context Compiler 不应该简单假设某一种来源永远覆盖另一种来源。
+
+它应该识别冲突，并将冲突作为诊断结果暴露出来。
+
+---
+
+## 安全与隐私
+
+Context Compiler 应该支持：
+
+* 密钥检测；
+* PII 脱敏；
+* 基于角色的上下文访问控制；
+* 数据源级权限；
+* 外部 Agent 过滤；
+* 审计记录；
+* 人工修正；
+* 来源追溯。
+
+当上下文会被外部 AI 服务或第三方 Agent 使用时，这一点尤其重要。
+
+---
+
+## 使用场景
+
+### AI Coding
+
+在编码前生成具体任务的前端或后端上下文。
+
+```bash
+context task "增加登录验证码过期处理" --role backend
+```
+
+### PR Review
+
+基于代码变更生成 Review Context。
+
+```bash
+context diff --from main --to feature/login-code-expiration
+```
+
+Reviewer Agent 可以检查本次变更是否符合：
+
+* 需求；
+* 设计说明；
+* 接口契约；
+* 测试用例；
+* 历史缺陷；
+* 业务规则。
+
+### 测试生成
+
+根据验收标准和历史缺陷生成测试上下文。
+
+```bash
+context task "为退款重试生成回归测试" --role tester
+```
+
+### 需求评审
+
+检查 PRD 是否具备足够的实现和测试信息。
+
+```bash
+context validate --source prd-order-refund-v3
+```
+
+### 新人或 AI Agent Onboarding
+
+生成项目摘要和领域导览。
+
+```bash
+context view project
+context view backend
+```
+
+---
+
+## 与代码知识图谱工具的区别
+
+Context Compiler 和代码理解、代码知识图谱工具相关，但关注点不同。
+
+代码知识图谱工具帮助 AI 理解代码结构。
+
+Context Compiler 试图帮助 AI 理解完整软件项目。
+
+```txt
+Codebase understanding:
+code -> graph -> search/explain/visualize
+
+Context Compiler:
+product/design/code/test/bugs/logs -> context graph -> role views/task context/diagnostics -> multi-agent collaboration
+```
+
+简单来说：
+
+> 代码知识图谱工具帮助 AI 看懂代码。
+> Context Compiler 帮助 AI 看懂项目，并按角色正确工作。
+
+---
+
+## 当前状态
+
+本项目当前处于 RFC / 实验设计阶段。
+
+初始目标是构建一个最小可用编译器，支持：
+
+* Markdown PRD；
+* OpenAPI 文档；
+* 本地 Git 仓库；
+* 源码符号提取；
+* Markdown 或表格测试用例；
+* 需求到接口的关联；
+* 接口到代码的关联；
+* 需求到测试的关联；
+* 角色视图生成；
+* 基础诊断能力。
+
+---
+
+## Roadmap
+
+### Phase 0: RFC
+
+* 定义核心概念；
+* 定义上下文 Schema；
+* 定义图谱模型；
+* 定义插件接口；
+* 定义 CLI 方案。
+
+### Phase 1: Local MVP
+
+* 本地 Markdown 数据源；
+* Git 数据源；
+* OpenAPI 解析器；
+* 基础 TypeScript 源码解析；
+* 使用 JSONL 或 SQLite 存储 Context Graph；
+* Markdown Role View 输出；
+* 基础诊断能力。
+
+### Phase 2: Task Context
+
+* 任务级上下文生成；
+* Diff 影响分析；
+* Reviewer Context；
+* Test Context；
+* Agent-ready context packs。
+
+### Phase 3: MCP Server
+
+* MCP Tool Server；
+* 动态上下文查询；
+* Agent 集成；
+* Claude Code / Cursor / Codex Adapter。
+
+### Phase 4: Multi-source Connectors
+
+* Figma Connector；
+* 飞书 / Notion / Confluence Connector；
+* Jira / Linear Connector；
+* 测试管理平台 Connector；
+* CI Report Connector。
+
+### Phase 5: Context Governance
+
+* Provenance Viewer；
+* 冲突检测；
+* 人工 Override；
+* 基于角色的访问控制；
+* PII 和 Secret 脱敏；
+* Context Health Dashboard。
+
+---
+
+## 参与贡献
+
+Context Compiler 是一次面向 AI 原生软件工程基础设施的开放探索。
+
+欢迎在以下方向贡献：
+
+* 上下文 Schema 设计；
+* 图谱模型设计；
+* Connector 插件；
+* Parser 插件；
+* Validator 规则；
+* Role View 模板；
+* MCP 集成；
+* AI Agent 工作流设计；
+* 示例项目和案例研究。
+
+如果你关注 AI coding agent、软件工程协作、Context Engineering、知识图谱、开发者工具或多 Agent 协作，这个项目会很适合你参与。
+
+---
+
+## License
+
+TBD.
+
+---
+
+## 项目愿景
+
+软件工程不只是代码。
+
+它是一张由需求、设计、接口、服务、测试、缺陷、决策、约束和人共同组成的网络。
+
+AI Agent 要想可靠地参与软件工程，就需要理解这张网络。
+
+Context Compiler 的目标，就是让这张网络变得显式、结构化、可追溯、可治理、可被 AI 使用。
+
+> From code repository to AI-collaborative project workspace.
