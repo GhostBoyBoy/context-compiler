@@ -1,1320 +1,1085 @@
-# AI-Collaborative Project Workspace: An Open Proposal for the Next Generation of Software Engineering Directory Structures
+# Context Compiler
 
-## Background
+> Compile scattered software project knowledge into structured, traceable, role-aware context for AI agents.
 
-Traditional software development is usually organized around humans.
+**Context Compiler** is an experimental Context Engineering project for AI-assisted software development.
 
-A project is typically completed by multiple roles working together: product, design, frontend, backend, QA, operations, and others. Each role uses its own tools, documents, and working style:
+It turns product documents, design specs, source code, API definitions, test cases, historical bugs, meeting notes, and runtime knowledge into structured context that AI agents can understand, trace, validate, and consume by role.
 
-- Product maintains PRDs, business rules, meeting notes, and requirement change records;
-- Design maintains prototypes, interaction notes, visual designs, and flow diagrams;
-- Frontend maintains pages, components, state management, and API calls;
-- Backend maintains services, APIs, domain models, databases, and jobs;
-- QA maintains test plans, test cases, bug retrospectives, test data notes, and automated tests.
+The goal is not to replace product managers, designers, developers, testers, or reviewers.
 
-In the traditional model, a repository is usually just a “code repository”.
+The goal is to reduce repeated context explanation and help AI agents work inside a real software project with the right background, the right constraints, and the right source of truth.
 
-A large amount of product context, business constraints, historical decisions, testing rationale, and design detail is scattered across document tools, chat logs, meeting notes, shared drives, issues, wikis, or people’s heads.
+---
 
-This can still work in a purely human collaboration model, but it creates new problems in the era of AI coding agents:
+## Why Context Compiler?
 
-1. AI can see the code, but not the complete business context;
-2. AI can easily misread outdated materials, old proposals, or drafts;
-3. AI often does not know how requirements, tests, APIs, and pages relate to each other;
-4. Different roles repeatedly explain context to AI, creating duplicated communication and context waste;
-5. Forcing product, QA, or design teams to convert everything into Markdown or engineering-friendly formats creates significant organizational friction;
-6. AI coding agents are often biased toward developer workflows, while product, design, and QA roles also need AI context.
+Traditional software projects are usually organized around humans.
 
-Therefore, I want to raise an open question:
+A typical project may involve product, design, frontend, backend, testing, operations, and review roles. Each role maintains its own materials:
 
-> As AI becomes increasingly involved in software development, should a project repository evolve from a “code repository” into an “AI-collaborative project workspace”?
+* Product teams maintain PRDs, business rules, meeting notes, and requirement changes.
+* Designers maintain prototypes, interaction specs, visual designs, and user flows.
+* Frontend teams maintain pages, components, state management, and API calls.
+* Backend teams maintain services, APIs, domain models, databases, and background jobs.
+* Test teams maintain test plans, test cases, test data, bug reviews, and automated tests.
+
+In many teams, the repository is still mostly just a **code repository**.
+
+Important project knowledge is scattered across documentation tools, chat history, issue trackers, design tools, wiki pages, cloud drives, test platforms, and people’s memory.
+
+This may work, barely, in a human-only workflow.
+
+But in the age of AI coding agents, it creates a new problem:
+
+> AI agents can see the code, but they often cannot see the project.
+
+As a result, AI agents may:
+
+* misunderstand business requirements;
+* use outdated documents;
+* ignore design constraints;
+* miss acceptance criteria;
+* fail to understand how requirements, APIs, pages, tests, and bugs are related;
+* require every role to repeatedly explain the same background;
+* behave like a developer-only assistant instead of a project-level collaborator.
+
+Context Compiler explores a different model:
+
+> A project repository should evolve from a code repository into an AI-collaborative project workspace.
 
 ---
 
 ## Core Idea
 
-This project workspace is not about simply dumping every piece of material into one large repository.
+Context Compiler does **not** ask every role to rewrite their work in Markdown or engineering-specific formats.
 
-The core idea is:
+Instead:
 
-> Humans continue maintaining materials in the way they are already comfortable with;  
-> AI does not directly consume messy human-facing materials;  
-> A Context Compiler compiles product, design, QA, code, and other materials into structured AI-readable context;  
-> AI Agents for different roles collaborate through role-specific views;  
-> Claude Code, Codex, Cursor, and other AI Agents work based on those contexts, project-level Skills, MCP tools, and Agent rules.
+1. Humans keep using their existing tools.
+2. Context Compiler ingests project materials from multiple sources.
+3. The materials are parsed, normalized, linked, validated, and compressed.
+4. A project-level Context Graph is generated.
+5. Role-specific views and task-specific context packages are emitted.
+6. AI agents consume the compiled context through files, MCP tools, or agent-specific integrations.
 
-In other words:
-
-```text
-Product materials
-Design materials
-QA materials
-Frontend code
-Backend code
-Automated tests
-Historical bugs
-Runtime logs
-   ↓
+```txt
+Product Docs
+Design Specs
+Source Code
+API Definitions
+Test Cases
+Historical Bugs
+Runtime Logs
+Meeting Notes
+        ↓
 Context Compiler
-   ↓
-/workspace/AI/domain context
-/workspace/AI/role views
-   ↓
-Product Agent / Design Agent / Frontend Agent / Backend Agent / QA Agent / Reviewer Agent
-   ↓
-Requirement analysis, design validation, coding, testing, review, delivery
-```
-
-The goal of this model is not to replace product, design, QA, or development roles. The goal is to reduce low-value context relaying and make AI participation in multi-role engineering collaboration more reliable.
-
----
-
-## One-Sentence Definition
-
-> An AI-collaborative project workspace is a collaboration structure bounded by a project goal, entered through role-specific views, and transformed through a Context Compiler. It preserves the native working styles of product, design, development, and QA roles, while compiling their materials and engineering implementation into AI context suitable for different role-based Agents.
-
----
-
-## This Is Not About Making Other Roles Serve Development
-
-This proposal can easily be misunderstood as:
-
-> Product, design, and QA organize their materials so that developer Agents can write code better.
-
-That is only one scenario, not the full picture.
-
-A more complete interpretation is:
-
-> Each role maintains its own original materials;  
-> Each role can also use AI to understand the work produced by other roles;  
-> The Context Compiler compiles information from other roles into AI context views that are understandable and actionable for the current role.
-
-For example:
-
-### When a Developer Role Uses AI
-
-Product, design, and QA materials are compiled into context that helps with coding:
-
-```text
-/workspace/AI/role-views/for-frontend.generated.md
-/workspace/AI/role-views/for-backend.generated.md
-```
-
-A frontend Agent needs to understand:
-
-- Current requirements;
-- Page flows;
-- Interaction rules;
-- API contracts;
-- Test acceptance criteria;
-- Component reuse suggestions.
-
-A backend Agent needs to understand:
-
-- Business rules;
-- Domain models;
-- API contracts;
-- Frontend callers;
-- Idempotency and consistency requirements;
-- Testing risks and acceptance points.
-
-### When a Product Role Uses AI
-
-Frontend, backend, design, and QA modules should also be compiled into context that helps the product role understand project status:
-
-```text
-/workspace/AI/role-views/for-product.generated.md
-```
-
-A product Agent can answer:
-
-- Which requirements have already been implemented?
-- Which requirements are still uncovered?
-- Which pages, APIs, and data models in the codebase are related to a given requirement?
-- Do tests cover the key acceptance criteria?
-- Which product capabilities may be affected by recent code changes?
-- Are there inconsistencies between the current implementation and the PRD?
-- How do the code graph, service graph, or page graph map to product semantics?
-
-### When a Design Role Uses AI
-
-A design Agent can understand the following through frontend code, page graphs, component graphs, and product context:
-
-- Current page implementation status;
-- Which components already exist;
-- Which interactions have already been implemented;
-- Whether there are differences between design files and code implementation;
-- Which design changes may affect frontend, backend, or QA;
-- Whether a user flow is fully supported.
-
-### When a QA Role Uses AI
-
-A QA Agent can use product, design, frontend, backend, and historical bug context to understand:
-
-- Acceptance criteria for a requirement;
-- Which page flows need regression testing;
-- Which APIs and services are affected;
-- Which historical bugs may recur;
-- Which requirements lack automated test coverage;
-- How to generate test data;
-- The risk matrix of the current code change.
-
-Therefore, AI context is not one-directional:
-
-```text
-Product / Design / QA → Development
-```
-
-It is multi-directional:
-
-```text
-Product ↔ Design ↔ Frontend ↔ Backend ↔ QA
         ↓
-   Context Compiler
+Project Context Graph
         ↓
-   Role-specific AI Context
+Role Views / Task Context / Diagnostics / Agent Skill Packs
+        ↓
+Product Agent / Design Agent / Frontend Agent / Backend Agent / Test Agent / Reviewer Agent
 ```
+
+The key idea is simple:
+
+> AI should not consume messy human materials directly.
+> AI should consume compiled, structured, traceable, role-aware project context.
 
 ---
 
-## Design Principles
+## What Context Compiler Generates
 
-### 1. Human Materials Keep Their Native Form
+Context Compiler can generate several types of context artifacts.
 
-Human-maintained directories for product, design, QA, and similar roles should not restrict file formats.
+### 1. Project Brief
 
-They may contain:
+A high-level summary of the project:
 
-- Markdown
-- Word
-- PDF
-- PowerPoint
-- Excel
-- XMind
-- Images
-- Figma exports
-- Flowcharts
-- API collections
-- HAR captures
-- Logs
-- Meeting notes
-- Bug retrospectives
+* project purpose;
+* business domains;
+* user roles;
+* technical stack;
+* repository structure;
+* important global constraints;
+* current delivery goals.
 
-The reason is simple:
+### 2. Domain Context
 
-> We should not force the entire organization to change its existing working habits just to make AI comfortable.
+Business-domain-oriented context, such as:
 
-An AI-native workspace should reduce collaboration cost, not add burden to product, design, and QA teams.
-
----
-
-### 2. AI Reads Compiled Context by Default
-
-A normal AI Agent should not directly read human-facing material directories by default.
-
-For example, a normal development Agent should not directly read:
-
-```text
-../product
-../design
-../qa
+```txt
+auth/
+order/
+payment/
+inventory/
+notification/
+admin/
 ```
 
-It should first read:
+Each domain may contain:
 
-```text
-workspace/AI
-```
+* domain goals;
+* core business rules;
+* related requirements;
+* related pages;
+* related APIs;
+* related services;
+* related database tables;
+* related tests;
+* known risks;
+* historical decisions.
 
-Only the following cases should allow backtracking into original human materials:
+### 3. Role Views
 
-1. The user explicitly asks to inspect original materials;
-2. `/AI` context is missing or conflicting;
-3. The current task is to generate or repair AI context;
-4. The current Agent is a Context Compiler Agent;
-5. A human review requires source tracing.
+Different roles need different context.
 
----
+Context Compiler can emit role-specific views for:
 
-### 3. AI Context Is a Compiled Artifact, Not Human-Maintained Material
-
-Content under `/workspace/AI` is generated by tools and should not be manually edited by default.
+* Product Agent;
+* Design Agent;
+* Frontend Agent;
+* Backend Agent;
+* Test Agent;
+* Reviewer Agent.
 
 For example:
 
-```text
-/workspace/AI/product/requirements.generated.md
-/workspace/AI/qa/acceptance-map.generated.md
-/workspace/AI/backend/api-contracts.generated.md
-/workspace/AI/role-views/for-backend.generated.md
-/workspace/AI/role-views/for-product.generated.md
+```txt
+.context/views/product.md
+.context/views/design.md
+.context/views/frontend.md
+.context/views/backend.md
+.context/views/tester.md
+.context/views/reviewer.md
 ```
 
-If generated content is wrong, the original human material or Context Compiler rules should be fixed, and the generated files should be regenerated. The generated files themselves should not be manually patched.
+### 4. Task Context
 
----
+For a concrete task, Context Compiler can generate a focused context package.
 
-### 4. Domain Context and Role Views Should Be Separated
-
-The `/AI` directory should contain at least two types of content:
-
-```text
-Domain context: What is the current state of a domain?
-Role view: What does a role need to understand from other domains in order to do its work?
-```
-
-For example:
-
-```text
-/workspace/AI/product
-/workspace/AI/design
-/workspace/AI/frontend
-/workspace/AI/backend
-/workspace/AI/qa
-```
-
-These are domain contexts.
-
-```text
-/workspace/AI/role-views/for-product.generated.md
-/workspace/AI/role-views/for-designer.generated.md
-/workspace/AI/role-views/for-frontend.generated.md
-/workspace/AI/role-views/for-backend.generated.md
-/workspace/AI/role-views/for-qa.generated.md
-/workspace/AI/role-views/for-reviewer.generated.md
-```
-
-These are role views.
-
-Domain context answers:
-
-> What is the current state of product, design, frontend, backend, and QA?
-
-Role views answer:
-
-> What does a given role need to understand from other domains to complete its work?
-
----
-
-### 5. Use Official AI Tooling Mechanisms Whenever Possible
-
-This workspace should not invent a completely isolated plugin system.
-
-Therefore, project-level capabilities already supported by tools like Claude Code and Codex should be used in their official form whenever possible:
-
-- Claude Code:
-
-  - `CLAUDE.md`
-  - `.claude/settings.json`
-  - `.claude/skills/*/SKILL.md`
-  - `.claude/agents/*.md`
-  - `.claude/commands/*.md`
-  - `.mcp.json`
-
-- Codex:
-
-  - `AGENTS.md`
-  - `.codex/config.toml`
-  - `.codex/agents/*.toml`
-  - `.agents/skills/*/SKILL.md`
-
-`/AI` is responsible only for storing generated AI context. It should not replace official plugin, Skill, MCP, or Agent mechanisms.
-
----
-
-### 6. Skills Are Methods, MCPs Are Tools, AI Context Is Material
-
-These concepts should remain clearly separated:
-
-| Type | Purpose | Recommended Location |
-|---|---|---|
-| AI Context | Tells the Agent what the current project is, including requirements, APIs, tests, and risks | `/workspace/AI` |
-| Role View | Tells a role how to understand information from other roles | `/workspace/AI/role-views` |
-| Skill | Tells an Agent how to perform a certain class of task | `.claude/skills`, `.agents/skills` |
-| MCP | Provides callable tools to an Agent, such as documentation lookup, code search, GitLab, or context compilation | `.mcp.json`, `.codex/config.toml`, `scripts/mcp` |
-| Subagent | Defines a specialized Agent role, such as backend implementer, QA analyst, or context compiler | `.claude/agents`, `.codex/agents` |
-
----
-
-## Current Suggested Directory Structure
-
-The following is an initial directory structure for this proposal.
-
-It is not a final answer. It is a starting point for community discussion.
-
-```text
-project-root/
-  README.md
-
-  /product
-    /requirements
-    /business-rules
-    /user-research
-    /meeting-notes
-    /competitor-analysis
-    /prototype-screenshots
-    /archive
-
-  /design
-    /prototypes
-    /interaction-notes
-    /visual-guidelines
-    /flowcharts
-    /page-screenshots
-    /archive
-
-  /qa
-    /test-plans
-    /test-design
-    /test-cases
-    /bug-retrospectives
-    /test-data-notes
-    /environment-notes
-    /api-collections
-    /har-captures
-    /archive
-
-  /workspace
-    README.md
-
-    AGENTS.md
-    CLAUDE.md
-    CODEX.md
-
-    .mcp.json
-
-    /.claude
-      settings.json
-      settings.local.json
-
-      /skills
-        /context-reading
-          SKILL.md
-        /impact-analysis
-          SKILL.md
-        /context-compiler
-          SKILL.md
-        /requirement-change-sync
-          SKILL.md
-        /frontend-page-implementation
-          SKILL.md
-        /backend-api-implementation
-          SKILL.md
-        /regression-scope-analysis
-          SKILL.md
-        /mr-review
-          SKILL.md
-        /security-review
-          SKILL.md
-
-      /agents
-        product-context-compiler.md
-        design-context-compiler.md
-        qa-context-compiler.md
-        frontend-implementer.md
-        backend-implementer.md
-        reviewer.md
-
-      /commands
-        generate-ai-context.md
-        review-mr.md
-        analyze-impact.md
-
-    /.codex
-      config.toml
-
-      /agents
-        product-context-compiler.toml
-        design-context-compiler.toml
-        qa-context-compiler.toml
-        frontend-implementer.toml
-        backend-implementer.toml
-        reviewer.toml
-
-    /.agents
-      /skills
-        /context-reading
-          SKILL.md
-        /impact-analysis
-          SKILL.md
-        /context-compiler
-          SKILL.md
-        /requirement-change-sync
-          SKILL.md
-        /frontend-page-implementation
-          SKILL.md
-        /backend-api-implementation
-          SKILL.md
-        /regression-scope-analysis
-          SKILL.md
-        /mr-review
-          SKILL.md
-        /security-review
-          SKILL.md
-
-    /AI
-      /global
-        workspace-index.generated.md
-        source-manifest.generated.json
-        traceability.generated.md
-        open-questions.generated.md
-        deprecated-context.generated.md
-        context-health.generated.md
-
-      /product
-        context.generated.md
-        requirements.generated.md
-        business-rules.generated.md
-        glossary.generated.md
-        product-decisions.generated.md
-        open-questions.generated.md
-
-      /design
-        context.generated.md
-        page-flows.generated.md
-        interaction-rules.generated.md
-        component-map.generated.md
-        design-decisions.generated.md
-        open-questions.generated.md
-
-      /frontend
-        context.generated.md
-        page-map.generated.md
-        component-map.generated.md
-        route-map.generated.md
-        state-management.generated.md
-        api-usage.generated.md
-        frontend-risks.generated.md
-        code-graph.generated.json
-        dependency-map.generated.md
-
-      /backend
-        context.generated.md
-        architecture.generated.md
-        api-contracts.generated.md
-        domain-model.generated.md
-        database-map.generated.md
-        service-map.generated.md
-        backend-risks.generated.md
-        code-graph.generated.json
-        dependency-map.generated.md
-
-      /qa
-        context.generated.md
-        acceptance-map.generated.md
-        risk-matrix.generated.md
-        test-cases.generated.md
-        test-data-guide.generated.md
-        regression-scope.generated.md
-        known-bugs.generated.md
-
-      /role-views
-        for-product.generated.md
-        for-designer.generated.md
-        for-frontend.generated.md
-        for-backend.generated.md
-        for-qa.generated.md
-        for-reviewer.generated.md
-
-      /reports
-        2026-05-29-context-generation-report.md
-
-    /frontend
-      /web
-      /admin
-      /mobile
-      /shared-ui
-
-    /backend
-      /services
-      /api-gateway
-      /jobs
-      /shared
-
-    /testing
-      /integration
-      /e2e
-      /contract
-      /fixtures
-      /data-factory
-
-    /scripts
-      /context-compiler
-        package.json
-        src/
-
-      /mcp
-        /context-compiler-mcp
-        /code-search-mcp
-        /gitlab-mcp
-
-      generate-ai-context.ts
-      validate-context.ts
-      check-traceability.ts
-      sync-skills.ts
-
-    /infra
-      docker-compose.yml
-      k8s/
-      terraform/
-
-    /.context-cache
-      /product
-      /design
-      /qa
-      /frontend
-      /backend
-```
-
----
-
-## Why Separate `/workspace`?
-
-In this design, AI coding agents such as Claude Code and Codex open:
-
-```text
-project-root/workspace
-```
-
-instead of opening the project root.
-
-This has several benefits:
-
-1. It prevents normal Agents from scanning outer human-facing material directories by default;
-2. It places the AI runtime environment and engineering source code inside a clear boundary;
-3. It makes `/product`, `/design`, and `/qa` inputs to the Context Compiler instead of direct context for normal Agents;
-4. It makes it easier to configure project-level rules, MCP tools, Skills, and Subagents for Claude/Codex;
-5. It makes future support for different AI tools easier.
-
-The overall relationship looks like this:
-
-```text
-project-root/
-  /product    Human-maintained product materials
-  /design     Human-maintained design materials
-  /qa         Human-maintained QA materials
-
-  /workspace  Working directory for Claude / Codex / Cursor and other AI Agents
-    /AI       Compiled AI context
-    /frontend Frontend source code
-    /backend  Backend source code
-```
-
----
-
-## The Role of the `/AI` Directory
-
-`/workspace/AI` is a multi-role AI context directory.
-
-It is not a human-facing material directory, and it is not only for developer Agents.
-
-It should be generated by the Context Compiler from product, design, frontend, backend, QA, and related materials, serving different AI collaboration needs for different roles.
-
-For example:
-
-- A product role uses `/AI/role-views/for-product.generated.md` to understand current implementation status, test coverage, and requirement delivery state;
-- A design role uses `/AI/role-views/for-designer.generated.md` to understand pages, components, interaction implementation, and design differences;
-- A frontend role uses `/AI/role-views/for-frontend.generated.md` to understand requirements, design, APIs, and test acceptance criteria;
-- A backend role uses `/AI/role-views/for-backend.generated.md` to understand business rules, API contracts, frontend callers, and testing risks;
-- A QA role uses `/AI/role-views/for-qa.generated.md` to understand product acceptance criteria, design flows, frontend/backend implementation, and regression scope;
-- A Reviewer role uses `/AI/role-views/for-reviewer.generated.md` to evaluate MR risk, test coverage, and requirement consistency.
-
-Therefore, the `/AI` directory contains two core categories of content:
-
-1. Domain context, such as `/AI/product`, `/AI/design`, `/AI/frontend`, `/AI/backend`, `/AI/qa`;
-2. Role views, such as `/AI/role-views/for-product.generated.md`, `for-backend.generated.md`, `for-qa.generated.md`.
-
-Domain context answers:
-
-> What is the current state of a domain?
-
-Role views answer:
-
-> What does a role need to understand from other domains in order to complete its work?
-
----
-
-## Role View Examples
-
-### `/AI/role-views/for-product.generated.md`
-
-For the product role.
-
-Possible sources include:
-
-- `/AI/frontend`
-- `/AI/backend`
-- `/AI/qa`
-- `/AI/design`
-- code graph
-- service graph
-- API graph
-- test coverage graph
-
-Possible contents include:
-
-- Requirement implementation status;
-- Page-to-requirement mapping;
-- API-to-requirement mapping;
-- Current capability boundaries;
-- Known technical constraints;
-- Test coverage status;
-- Product capabilities affected by recent changes;
-- Requirements that are not implemented or inconsistent with implementation;
-- How code structure maps to product capabilities.
-
-### `/AI/role-views/for-designer.generated.md`
-
-For the design role.
-
-Possible sources include:
-
-- `/AI/product`
-- `/AI/frontend`
-- `/AI/qa`
-- page graph
-- component graph
-
-Possible contents include:
-
-- Page list;
-- User flows;
-- Component reuse status;
-- Current interaction implementation constraints;
-- Released page status;
-- Differences between design and implementation;
-- Frontend modules and QA scope affected by design changes.
-
-### `/AI/role-views/for-frontend.generated.md`
-
-For the frontend role.
-
-Possible sources include:
-
-- `/AI/product`
-- `/AI/design`
-- `/AI/backend`
-- `/AI/qa`
-
-Possible contents include:
-
-- Current requirements;
-- Page flows;
-- Interaction rules;
-- API contracts;
-- Acceptance criteria;
-- Related tests;
-- Component reuse suggestions;
-- UI risk points.
-
-### `/AI/role-views/for-backend.generated.md`
-
-For the backend role.
-
-Possible sources include:
-
-- `/AI/product`
-- `/AI/frontend`
-- `/AI/qa`
-- service graph
-- database graph
-
-Possible contents include:
-
-- Business rules;
-- Domain models;
-- API contracts;
-- Frontend callers;
-- Idempotency and consistency requirements;
-- Database impact;
-- Test acceptance points;
-- Risk boundaries.
-
-### `/AI/role-views/for-qa.generated.md`
-
-For the QA role.
-
-Possible sources include:
-
-- `/AI/product`
-- `/AI/design`
-- `/AI/frontend`
-- `/AI/backend`
-- Historical bugs
-- code graph
-
-Possible contents include:
-
-- Acceptance criteria;
-- Page paths;
-- API flows;
-- Risk matrix;
-- Test data suggestions;
-- Regression scope;
-- Code change impact surface;
-- Historical bug recurrence risk.
-
-### `/AI/role-views/for-reviewer.generated.md`
-
-For the Reviewer role.
-
-Possible sources include:
-
-- `/AI/product`
-- `/AI/design`
-- `/AI/frontend`
-- `/AI/backend`
-- `/AI/qa`
-- MR diff
-- code graph
-- test coverage
-
-Possible contents include:
-
-- Requirements related to the current change;
-- Affected pages, APIs, services, and tests;
-- Risks caused by missing test coverage;
-- Inconsistencies between requirements and implementation;
-- Code complexity or security risks;
-- Whether generated file rules are violated;
-- Whether the Agent misread or overstepped into human-facing material directories.
-
----
-
-## What Is the Context Compiler?
-
-The Context Compiler is the key component of this proposal.
-
-It reads human-facing material directories:
-
-```text
-../product
-../design
-../qa
-```
-
-and, when needed, engineering source code:
-
-```text
-/frontend
-/backend
-/testing
-```
-
-Then it generates:
-
-```text
-/workspace/AI
-```
-
-It should support at least the following capabilities:
-
-1. Multi-format parsing: PDF, PowerPoint, Word, Excel, XMind, images, Markdown, HTML, JSON;
-2. OCR and screenshot understanding;
-3. Requirement extraction;
-4. Business rule extraction;
-5. Glossary extraction;
-6. Design flow and page relationship extraction;
-7. Test point and test case extraction;
-8. Code structure scanning;
-9. Code graph / dependency graph / service graph generation;
-10. API contract generation;
-11. Conflict detection;
-12. Outdated information detection;
-13. Traceability generation;
-14. Role-specific AI view generation;
-15. Generation reports for human review.
-
-Its role is similar to:
-
-```text
-Human materials + engineering implementation = source code
-Context Compiler = compiler
-/AI = compiled artifacts
-Agent = runtime consumer
-```
-
----
-
-## Recommended Agent Access Rules
-
-A normal Agent is allowed to read by default:
-
-```text
-/AI
-/frontend
-/backend
-/testing
-/scripts
-/infra
-```
-
-A normal Agent is forbidden by default from reading:
-
-```text
-../product
-../design
-../qa
-../**/archive/**
-```
-
-Human-facing materials may contain:
-
-- Historical proposals;
-- Drafts;
-- Temporary meeting conclusions;
-- Outdated designs;
-- Unconfirmed requirements;
-- Unstructured descriptions;
-- Sensitive information;
-- Context that is not suitable for direct AI consumption.
-
-Only a Context Compiler Agent or an explicitly authorized task may read human-facing material directories.
-
----
-
-## Recommended AI Tooling Capabilities
-
-This workspace can integrate several kinds of capabilities from the current AI coding ecosystem.
-
-### 1. Project Skills
-
-Project-level Skills capture “how to perform a class of task”.
-
-For example:
-
-```text
-context-reading
-impact-analysis
-context-compiler
-requirement-change-sync
-frontend-page-implementation
-backend-api-implementation
-regression-scope-analysis
-mr-review
-security-review
-```
-
-A Skill is not context material. It is a task method.
-
-For example, `backend-api-implementation` should tell an Agent:
-
-1. Which AI contexts to read first;
-2. How to confirm the requirement ID;
-3. How to inspect API contracts;
-4. How to modify backend code;
-5. How to add or update tests;
-6. How to output risks and open questions.
-
-And `requirement-change-sync` should tell a product Agent:
-
-1. How to read `for-product.generated.md`;
-2. How to understand current implementation status;
-3. How to determine whether a requirement already has corresponding pages, APIs, and tests;
-4. How to propose the impact scope of a requirement change;
-5. How to generate follow-up items for development, design, and QA.
-
----
-
-### 2. MCP Servers
-
-MCP provides callable tools to Agents, such as:
-
-- Latest technical documentation lookup;
-- Semantic code search;
-- GitLab MR lookup and review;
-- Project context compilation;
-- Impact analysis;
-- Test data generation.
-
-Recommended MCP types:
-
-```text
-context7             latest library documentation lookup
-code-search          semantic code search
-context-compiler     compile product/design/QA/code into /AI
-gitlab               query MRs, issues, and pipelines
-```
-
----
-
-### 3. Code Graph / Knowledge Graph
-
-An AI Agent should not scan the whole repository every time.
-
-A better approach is to generate code graphs and project graphs, such as:
-
-```text
-/AI/frontend/component-map.generated.md
-/AI/frontend/route-map.generated.md
-/AI/backend/service-map.generated.md
-/AI/backend/domain-model.generated.md
-/AI/global/traceability.generated.md
-```
-
-This helps Agents for different roles understand project structure and impact scope more quickly.
-
-For example:
-
-- A development Agent uses the code graph to understand implementation locations;
-- A product Agent uses the code graph to understand whether a requirement has landed;
-- A QA Agent uses the code graph to determine regression scope;
-- A Reviewer Agent uses the code graph to inspect MR impact.
-
----
-
-### 4. Multi-format Document Parsing
-
-Because human materials do not restrict file formats, the Context Compiler must support multi-format inputs.
-
-It may integrate:
-
-- PDF parser
-- DOCX parser
-- PPTX parser
-- XLSX parser
-- XMind parser
-- OCR
-- Image understanding
-- Markdown parser
-- HTML parser
-
-This capability determines whether the workspace can be adopted with low organizational friction.
-
----
-
-## A Typical Workflow: Development Role
-
-### Scenario: Product Changes a Refund Requirement, Backend Needs to Implement It
-
-1. Product updates:
-
-```text
-/product/requirements/refund-flow-requirement.pdf
-/product/meeting-notes/refund-requirement-review.docx
-```
-
-2. Run the Context Compiler:
+Example:
 
 ```bash
-cd workspace
-npm run ai:context
+context task "Support partial refund for orders" --role backend
 ```
 
-3. The tool generates:
+Possible output:
 
-```text
-/workspace/AI/product/requirements.generated.md
-/workspace/AI/product/business-rules.generated.md
-/workspace/AI/qa/acceptance-map.generated.md
-/workspace/AI/role-views/for-backend.generated.md
-/workspace/AI/reports/context-generation-report.md
+```txt
+.context/tasks/support-partial-refund.backend.md
 ```
 
-4. The backend Agent reads:
+A task context may include:
 
-```text
-/AI/role-views/for-backend.generated.md
-/AI/product/requirements.generated.md
-/AI/backend/api-contracts.generated.md
-/AI/qa/acceptance-map.generated.md
-```
+* relevant requirements;
+* business rules;
+* acceptance criteria;
+* related APIs;
+* related services;
+* related database tables;
+* related tests;
+* historical bugs;
+* risk points;
+* recommended validation steps;
+* constraints that should not be broken.
 
-5. The backend Agent modifies code:
+### 5. Diagnostics
 
-```text
-/backend
-/testing
-```
+Context Compiler can detect context quality issues, such as:
 
-6. The Reviewer Agent reviews the MR based on `/AI` and code changes.
+* requirement without acceptance criteria;
+* requirement without test coverage;
+* design not linked to any implementation;
+* API mentioned in PRD but missing from OpenAPI;
+* frontend calling undefined backend API;
+* outdated context still referenced;
+* conflicting business rules;
+* missing regression test for historical bug.
+
+### 6. Agent Skill Packs
+
+Context Compiler may emit agent-specific instruction packs for tools such as:
+
+* Claude Code;
+* Codex;
+* Cursor;
+* Copilot;
+* Gemini CLI;
+* other AI coding agents.
 
 ---
 
-## A Typical Workflow: Product Role
+## Project Context Graph
 
-### Scenario: Product Wants to Confirm Whether a Requirement Has Fully Landed
+The center of Context Compiler is the **Project Context Graph**.
 
-1. The Context Compiler scans code, tests, and design context:
+Instead of storing documents as isolated chunks, Context Compiler models project knowledge as connected engineering objects.
 
-```text
-/workspace/frontend
-/workspace/backend
-/workspace/testing
-/workspace/AI/design
-/workspace/AI/qa
+Example node types:
+
+```txt
+Requirement
+BusinessRule
+AcceptanceCriteria
+DesignFrame
+UserFlow
+Page
+Component
+API
+Service
+DomainModel
+DatabaseTable
+BackgroundJob
+TestCase
+Bug
+Decision
+Risk
+Release
+CodeSymbol
 ```
 
-2. It generates the product role view:
+Example relationships:
 
-```text
-/workspace/AI/role-views/for-product.generated.md
+```txt
+Requirement -> has_acceptance_criteria -> AcceptanceCriteria
+Requirement -> designed_by -> DesignFrame
+Requirement -> implemented_by -> CodeSymbol
+Requirement -> verified_by -> TestCase
+Requirement -> affected_by -> Bug
+
+DesignFrame -> maps_to -> Page
+Page -> uses -> Component
+Component -> calls -> API
+API -> handled_by -> Service
+Service -> reads_writes -> DatabaseTable
+TestCase -> covers -> Requirement
+Bug -> requires_regression_test -> TestCase
+Decision -> supersedes -> Decision
 ```
 
-3. A product Agent can answer based on this role view:
+This graph allows AI agents to answer questions such as:
 
-```text
-Has RQ-REFUND-001 partial refund been implemented?
-Which pages support it?
-Which APIs support it?
-Which tests cover it?
-What gaps remain?
-Will the latest MR affect this requirement?
-```
-
-4. If inconsistencies between requirement and implementation are found, product can initiate:
-
-```text
-Requirement clarification
-Requirement change
-Design supplement
-Development task
-QA supplement
-```
-
-instead of repeatedly asking each role in meetings.
+* Which APIs are related to this requirement?
+* Which frontend pages are affected by this backend change?
+* Does this requirement have test coverage?
+* Which historical bugs should be considered before changing this logic?
+* Is this design still active or deprecated?
+* Does this PR break an old business rule?
 
 ---
 
-## A Typical Workflow: QA Role
+## Architecture
 
-### Scenario: QA Needs to Determine the Regression Scope of a Code Change
+A typical Context Compiler architecture looks like this:
 
-1. The Context Compiler reads:
-
-```text
-/workspace/AI/product
-/workspace/AI/design
-/workspace/AI/frontend
-/workspace/AI/backend
-/workspace/backend code graph
-/workspace/frontend code graph
-/qa/bug-retrospectives
+```txt
+┌──────────────────────────────────────────────┐
+│              Human Work Sources              │
+│ PRD / Figma / Issues / Code / Tests / Logs   │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Source Connectors               │
+│ Feishu / Notion / Figma / Git / Jira / etc.  │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Normalization Layer             │
+│ Docs / Design Nodes / Code Symbols / Tests   │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Compiler Core                   │
+│ Parse / Classify / Link / Validate / Compress│
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Project Context Graph           │
+│ Requirement ↔ Design ↔ API ↔ Code ↔ Test     │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Context Artifacts               │
+│ Role Views / Task Context / Diagnostics      │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│              Agent Runtime Integration       │
+│ Claude Code / Codex / Cursor / MCP / CI      │
+└──────────────────────────────────────────────┘
 ```
 
-2. It generates the QA role view:
+---
 
-```text
-/workspace/AI/role-views/for-qa.generated.md
-/workspace/AI/qa/regression-scope.generated.md
-/workspace/AI/qa/risk-matrix.generated.md
+## Compiler Pipeline
+
+Context Compiler follows a compiler-like pipeline:
+
+```txt
+Ingest
+  ↓
+Parse
+  ↓
+Normalize
+  ↓
+Classify
+  ↓
+Link
+  ↓
+Validate
+  ↓
+Compress
+  ↓
+Emit
 ```
 
-3. The QA Agent can answer:
+### Ingest
 
-```text
-Which features are affected by this change?
-Which pages need regression testing?
-Which APIs need regression testing?
-Which historical bugs may recur?
-Which test cases need to be added or updated?
-Is automated test coverage missing?
+Collect project materials from different tools.
+
+Possible sources:
+
+* Git repositories;
+* Markdown documents;
+* OpenAPI specs;
+* design files;
+* issue trackers;
+* test case systems;
+* CI reports;
+* runtime logs;
+* meeting notes.
+
+### Parse
+
+Parse raw materials into structured intermediate objects.
+
+Examples:
+
+* Markdown sections;
+* OpenAPI operations;
+* source code symbols;
+* test case records;
+* design frames;
+* issue items.
+
+### Normalize
+
+Convert different materials into unified context blocks.
+
+### Classify
+
+Classify context blocks into types such as:
+
+* requirement;
+* business rule;
+* acceptance criteria;
+* design spec;
+* API contract;
+* test case;
+* bug;
+* decision;
+* risk;
+* code symbol.
+
+### Link
+
+Build relationships between context objects.
+
+Examples:
+
+* requirement to API;
+* API to backend service;
+* page to component;
+* requirement to test case;
+* bug to regression test;
+* design frame to frontend route.
+
+### Validate
+
+Run consistency and quality checks.
+
+Examples:
+
+* missing acceptance criteria;
+* missing test coverage;
+* API mismatch;
+* deprecated context usage;
+* conflicting requirements.
+
+### Compress
+
+Generate concise AI-readable context at different levels:
+
+* project-level;
+* domain-level;
+* role-level;
+* task-level.
+
+### Emit
+
+Output context artifacts to local files, JSONL, Markdown, MCP tools, CI reports, or agent-specific configuration.
+
+---
+
+## Suggested Output Structure
+
+A compiled project may contain:
+
+```txt
+.context/
+  context-manifest.json
+
+  views/
+    project.md
+    product.md
+    design.md
+    frontend.md
+    backend.md
+    tester.md
+    reviewer.md
+
+  domains/
+    auth.md
+    order.md
+    payment.md
+
+  tasks/
+    TASK-1234.backend.md
+    TASK-1234.tester.md
+
+  graph/
+    nodes.jsonl
+    edges.jsonl
+    diagnostics.jsonl
+
+  indexes/
+    vector.index
+    symbol.index
+    api.index
+
+  artifacts/
+    claude-code/
+    cursor/
+    codex/
+
+  cache/
 ```
 
 ---
 
-## What Does This Proposal Try to Solve?
+## Example Context Manifest
 
-### 1. Reduce Repeated Cross-role Communication
-
-Many meetings are essentially context synchronization.
-
-Now context can be structured, generated, traced, and reviewed.
+```json
+{
+  "project": "example-shop",
+  "compiledAt": "2026-06-02T10:00:00Z",
+  "compilerVersion": "0.1.0",
+  "sources": [
+    {
+      "id": "prd-order-v3",
+      "type": "prd",
+      "uri": "feishu://doc/example",
+      "status": "active",
+      "updatedAt": "2026-06-01T12:00:00Z"
+    }
+  ],
+  "views": {
+    "frontend": ".context/views/frontend.md",
+    "backend": ".context/views/backend.md",
+    "tester": ".context/views/tester.md",
+    "reviewer": ".context/views/reviewer.md"
+  },
+  "graph": {
+    "nodes": ".context/graph/nodes.jsonl",
+    "edges": ".context/graph/edges.jsonl"
+  },
+  "diagnostics": ".context/graph/diagnostics.jsonl"
+}
+```
 
 ---
 
-### 2. Reduce AI Coding Hallucination and Misreading
+## Example Role View
 
-Agents do not directly read messy original materials. They read compiled and validated context.
+```md
+# Backend Role Context
+
+## Scope
+
+This view is optimized for backend implementation and review.
+
+## Related Domains
+
+- Auth
+- Order
+- Payment
+
+## APIs
+
+### POST /api/orders/{id}/refund
+
+Related requirement:
+
+- REQ-ORDER-REFUND-001
+
+Business rules:
+
+- Refund amount must not exceed refundable amount.
+- Refund operation must be idempotent.
+- Refunded orders must generate an audit record.
+
+Related services:
+
+- RefundService
+- OrderService
+- PaymentGatewayClient
+
+Related tests:
+
+- TC-REFUND-001
+- TC-REFUND-002
+- TC-REFUND-REGRESSION-001
+
+Historical risks:
+
+- BUG-2025-331: duplicate refund caused by retry.
+- BUG-2025-418: refund succeeded but order status was not updated.
+```
 
 ---
 
-### 3. Preserve Traditional Team Workflows
+## Example CLI
 
-Product, design, and QA teams do not need to immediately change their tools.
+> The CLI interface is still a proposal.
 
-They only need to place materials in the right location and review generation reports.
+```bash
+# Initialize Context Compiler in a project
+context init
+
+# Sync external sources
+context sync
+
+# Compile project context
+context compile
+
+# Validate context quality
+context validate
+
+# Generate role view
+context view backend
+
+# Generate task-specific context
+context task "Support partial refund for orders" --role backend
+
+# Explain where a context item came from
+context explain REQ-ORDER-REFUND-001
+
+# Analyze impact of a code change
+context diff --from main --to feature/partial-refund
+
+# Emit agent-specific artifacts
+context emit --target claude-code
+context emit --target cursor
+context emit --target codex
+```
 
 ---
 
-### 4. Make Requirements, Design, Code, and Tests Traceable
+## Plugin System
+
+Context Compiler is designed to be extensible.
+
+### Connector Plugins
+
+Connect to external sources.
+
+Examples:
+
+```txt
+connector-git
+connector-feishu
+connector-notion
+connector-confluence
+connector-figma
+connector-jira
+connector-linear
+connector-openapi
+connector-testrail
+connector-zentao
+```
+
+### Parser Plugins
+
+Parse raw content into structured blocks.
+
+Examples:
+
+```txt
+parser-markdown
+parser-docx
+parser-html
+parser-openapi
+parser-source-code
+parser-xlsx
+parser-figma
+```
+
+### Linker Plugins
+
+Build graph relationships.
+
+Examples:
+
+```txt
+linker-requirement-api
+linker-api-code
+linker-requirement-test
+linker-design-route
+linker-bug-regression
+```
+
+### Validator Plugins
+
+Check context quality.
+
+Examples:
+
+```txt
+validator-missing-tests
+validator-api-mismatch
+validator-deprecated-context
+validator-design-requirement-mismatch
+validator-conflicting-rules
+```
+
+### Emitter Plugins
+
+Emit context artifacts.
+
+Examples:
+
+```txt
+emitter-markdown
+emitter-jsonl
+emitter-mcp
+emitter-claude-code
+emitter-cursor
+emitter-codex
+emitter-html-report
+```
+
+### Policy Plugins
+
+Control visibility, security, and privacy.
+
+Examples:
+
+```txt
+policy-redaction
+policy-role-access
+policy-pii-filter
+policy-secret-filter
+policy-external-agent-filter
+```
+
+---
+
+## Configuration Example
+
+```ts
+import { defineContextProject } from '@context-compiler/core'
+
+export default defineContextProject({
+  project: {
+    name: 'example-shop',
+    domains: ['auth', 'order', 'payment', 'inventory'],
+    defaultLanguage: 'en-US'
+  },
+
+  sources: [
+    {
+      type: 'git',
+      name: 'frontend',
+      path: './apps/web'
+    },
+    {
+      type: 'git',
+      name: 'backend',
+      path: './apps/api'
+    },
+    {
+      type: 'openapi',
+      name: 'api-spec',
+      path: './openapi.yaml'
+    },
+    {
+      type: 'markdown',
+      name: 'product-docs',
+      path: './docs/product'
+    },
+    {
+      type: 'markdown',
+      name: 'test-cases',
+      path: './docs/tests'
+    }
+  ],
+
+  roles: {
+    product: {
+      include: ['requirement', 'business_rule', 'decision', 'diagnostic']
+    },
+    frontend: {
+      include: ['requirement', 'design_spec', 'api_contract', 'ui_component', 'test_case']
+    },
+    backend: {
+      include: ['requirement', 'api_contract', 'domain_model', 'database', 'test_case', 'bug']
+    },
+    tester: {
+      include: ['requirement', 'acceptance_criteria', 'test_case', 'bug', 'risk']
+    },
+    reviewer: {
+      include: ['*'],
+      diagnostics: true
+    }
+  },
+
+  policies: {
+    redact: [
+      'secret',
+      'access_token',
+      'phone_number',
+      'email',
+      'id_card'
+    ],
+    deprecatedHandling: 'warn',
+    conflictHandling: 'diagnose'
+  },
+
+  emitters: [
+    {
+      type: 'markdown',
+      outputDir: '.context/views'
+    },
+    {
+      type: 'jsonl',
+      outputDir: '.context/graph'
+    },
+    {
+      type: 'mcp',
+      port: 3921
+    }
+  ]
+})
+```
+
+---
+
+## MCP Integration
+
+Context Compiler can expose project context through an MCP server.
+
+Possible MCP tools:
+
+```txt
+get_project_brief
+get_role_view
+get_domain_context
+get_task_context
+search_context
+get_related_nodes
+get_requirement
+get_api_context
+get_test_coverage
+get_diagnostics
+explain_trace
+```
+
+Example request:
+
+```json
+{
+  "tool": "get_task_context",
+  "input": {
+    "task": "Support partial refund for orders",
+    "role": "backend",
+    "maxTokens": 12000
+  }
+}
+```
+
+Example response:
+
+```json
+{
+  "summary": "...",
+  "requirements": [],
+  "businessRules": [],
+  "apis": [],
+  "services": [],
+  "databaseTables": [],
+  "tests": [],
+  "risks": [],
+  "recommendedChecks": []
+}
+```
+
+---
+
+## Context Governance
+
+Context Compiler treats context as something that must be governed, not just retrieved.
+
+Each context block should carry metadata such as:
+
+```txt
+source URI
+source type
+author
+created time
+updated time
+status
+confidence
+authority level
+effective time
+deprecation state
+owner role
+```
+
+This allows AI agents to know:
+
+* where a context item came from;
+* whether it is still active;
+* whether it is approved or only a draft;
+* whether it conflicts with another source;
+* whether the current agent is allowed to see it;
+* whether it should be used as a source of truth.
+
+---
+
+## Context Priority
+
+Different sources may represent different kinds of truth.
 
 For example:
 
-```text
-RQ-REFUND-001
-  → PAGE-REFUND-DETAIL
-  → API-REFUND-CREATE
-  → SERVICE-order-service
-  → TC-REFUND-003
+```txt
+Code represents current behavior.
+PRD represents expected behavior.
+Tests represent verified behavior.
+Design represents intended user experience.
+Bugs represent historical risk.
+Decisions represent architectural constraints.
 ```
 
-This kind of traceability is useful for AI, MR review, regression analysis, and impact analysis.
+Context Compiler should not blindly assume one source always overrides another.
+
+Instead, it should detect conflicts and expose them as diagnostics.
 
 ---
 
-### 5. Build a Foundation for Multi-Agent Collaboration
+## Security and Privacy
 
-In the future, different Agents can take different responsibilities:
+Context Compiler should support:
 
-- Product Context Compiler
-- Design Context Compiler
-- QA Context Compiler
-- Frontend Implementer
-- Backend Implementer
-- Reviewer
-- Security Reviewer
-- Regression Analyzer
-- Product Analyst
-- Design Reviewer
+* secret detection;
+* PII redaction;
+* role-based context access;
+* source-level permissions;
+* external-agent filtering;
+* audit trails;
+* manual override;
+* provenance tracking.
 
-They no longer work from temporary prompts. They collaborate through a unified workspace, project-level Skills, MCP tools, and AI context.
+This is especially important when context is used by external AI services or third-party agents.
 
 ---
 
-### 6. Let Every Role Use AI to Understand the Work of Other Roles
+## Use Cases
 
-Product does not need to read code to understand implementation status.
+### AI Coding
 
-QA does not need to ask developers one by one to understand change impact.
+Generate task-specific backend or frontend context before coding.
 
-Design does not need to inspect source code manually to understand components and page implementation.
-
-Developers do not need repeated meetings to understand requirements, design, and test acceptance criteria.
-
-This is the most important value of an AI-collaborative project workspace.
-
----
-
-## Open Questions
-
-This proposal is still immature, and many questions need discussion.
-
-### 1. Is `/workspace` the Best Name?
-
-Possible names include:
-
-```text
-/workspace
-/engineering
-/ai-workspace
-/dev
+```bash
+context task "Add login verification code expiration handling" --role backend
 ```
 
-Which one is most suitable for global developers?
+### PR Review
+
+Generate a review context for changed files.
+
+```bash
+context diff --from main --to feature/login-code-expiration
+```
+
+The Reviewer Agent can check whether the change is consistent with:
+
+* requirements;
+* design specs;
+* API contracts;
+* test cases;
+* historical bugs;
+* business rules.
+
+### Test Generation
+
+Generate test context from acceptance criteria and historical bugs.
+
+```bash
+context task "Generate regression tests for refund retry" --role tester
+```
+
+### Requirement Review
+
+Check whether a PRD has enough implementation and testing information.
+
+```bash
+context validate --source prd-order-refund-v3
+```
+
+### Onboarding
+
+Generate a project brief and domain tours for new developers or AI agents.
+
+```bash
+context view project
+context view backend
+```
 
 ---
 
-### 2. Should Human-facing Materials Be Stored Entirely in the Repository?
+## Comparison with Codebase Knowledge Graph Tools
 
-For internal company projects, there may be privacy, compliance, and large-file concerns.
+Context Compiler is related to codebase understanding and knowledge graph tools, but it has a different focus.
 
-Should we support:
+A codebase graph tool helps AI understand code structure.
 
-- Git LFS;
-- External document links;
-- Private object storage;
-- Manifest-only storage without original files;
-- Local-only compilation without committing original materials?
+Context Compiler aims to help AI understand the whole software project.
 
----
+```txt
+Codebase understanding:
+code -> graph -> search/explain/visualize
 
-### 3. Should Generated `/AI` Artifacts Be Committed to Git?
+Context Compiler:
+product/design/code/test/bugs/logs -> context graph -> role views/task context/diagnostics -> multi-agent collaboration
+```
 
-Possible modes include:
+In short:
 
-- Commit `/AI`, so the team shares the same AI context;
-- Do not commit `/AI`; each developer generates it locally;
-- Commit only selected core context;
-- Generate it in CI and publish it as an artifact.
-
-More real-world validation is needed.
+> Codebase graph tools help AI understand code.
+> Context Compiler helps AI understand the project and work correctly by role.
 
 ---
 
-### 4. Should Normal Agents Be Completely Forbidden From Reading Human-facing Materials?
+## Current Status
 
-The current suggestion is “forbidden by default, allowed by exception”.
+This project is currently in the RFC / experimental design stage.
 
-Real projects may require a more granular permission model.
+The initial goal is to build a minimal compiler that supports:
 
----
-
-### 5. How Powerful Should the Context Compiler Be?
-
-A minimum viable version may support only Markdown, PDF, DOCX, and XLSX.
-
-A production-grade version may need to support:
-
-- OCR;
-- Image understanding;
-- XMind;
-- PowerPoint;
-- Figma;
-- API platforms;
-- GitLab;
-- Jira;
-- Confluence;
-- Lark / Notion / Yuque and similar tools.
+* Markdown PRD;
+* OpenAPI specs;
+* local Git repositories;
+* source code symbol extraction;
+* Markdown or spreadsheet test cases;
+* requirement-to-API linking;
+* API-to-code linking;
+* requirement-to-test linking;
+* role view generation;
+* basic diagnostics.
 
 ---
 
-### 6. Should Skills Be Unified Across Tools?
+## Roadmap
 
-Claude Code, Codex, Cursor, OpenCode, and Gemini CLI support Skills, Agents, and MCP in different ways.
+### Phase 0: RFC
 
-Do we need a cross-tool Project Skill standard?
+* Define core concepts.
+* Define context schema.
+* Define graph model.
+* Define plugin interfaces.
+* Define CLI proposal.
+
+### Phase 1: Local MVP
+
+* Local Markdown source connector.
+* Git source connector.
+* OpenAPI parser.
+* Basic TypeScript source parser.
+* Context graph stored as JSONL or SQLite.
+* Markdown role view emitter.
+* Basic diagnostics.
+
+### Phase 2: Task Context
+
+* Task-based context generation.
+* Diff impact analysis.
+* Reviewer context.
+* Test context.
+* Agent-ready context packs.
+
+### Phase 3: MCP Server
+
+* MCP tool server.
+* Dynamic context query.
+* Agent integration.
+* Claude Code / Cursor / Codex adapters.
+
+### Phase 4: Multi-source Connectors
+
+* Figma connector.
+* Feishu / Notion / Confluence connector.
+* Jira / Linear connector.
+* Test management connector.
+* CI report connector.
+
+### Phase 5: Context Governance
+
+* Provenance viewer.
+* Conflict detection.
+* Manual override.
+* Role-based access.
+* PII and secret redaction.
+* Context health dashboard.
 
 ---
 
-### 7. How Should AI Context Quality Be Evaluated?
+## Contributing
 
-A `context-health.generated.md` file may need to track:
+Context Compiler is an open exploration of AI-native software engineering infrastructure.
 
-- Coverage;
-- Number of conflicts;
-- Open questions;
-- Outdated materials;
-- Requirement-to-test traceability completeness;
-- Code impact analysis confidence;
-- Usability of different role views;
-- Whether role views are outdated;
-- Whether code graphs are synchronized with source code.
+Contributions are welcome in the following areas:
 
----
+* context schema design;
+* graph model design;
+* connector plugins;
+* parser plugins;
+* validator rules;
+* role view templates;
+* MCP integration;
+* AI agent workflow design;
+* examples and case studies.
 
-### 8. How Should Role Views Be Generated?
-
-Different roles need different levels of detail.
-
-Questions to discuss:
-
-- Should the product view include code details?
-- Should the QA view include the full code graph?
-- How should the design view express differences between design files and implementation?
-- Should the backend view include frontend call chains?
-- Should the Reviewer view combine MR diff, test coverage, and requirement traceability?
-- Should custom roles be supported?
+If you are interested in AI coding agents, software engineering workflows, context engineering, knowledge graphs, developer tools, or multi-agent collaboration, this project is for you.
 
 ---
 
-## Discussion Welcome
+## License
 
-This repository is not meant to declare a standard. It is meant to ask a question:
+TBD.
 
-> In the age of AI coding agents, how should software project directory structures and collaboration models evolve?
+---
 
-I hope the community can discuss:
+## Project Vision
 
-- Is this directory structure reasonable?
-- Is the `/workspace` boundary clear?
-- Should `/AI` be committed?
-- How should the Context Compiler be designed?
-- How should role views be defined?
-- How should Claude Code, Codex, Cursor, and other tools jointly support project-level context?
-- Should Skills, MCP, and Subagents have a more unified cross-tool standard?
-- How can product, design, and QA participate in AI-native engineering collaboration without changing their working habits too much?
-- How can product, design, development, and QA all use AI to understand each other’s work?
+Software engineering is not only code.
 
-Issues, proposals, PRs, and alternative directory structures are welcome.
+It is a network of requirements, designs, APIs, services, tests, bugs, decisions, constraints, and people.
 
+AI agents need this network to work reliably.
+
+Context Compiler is an attempt to make that network explicit, structured, traceable, and usable.
+
+> From code repository to AI-collaborative project workspace.
